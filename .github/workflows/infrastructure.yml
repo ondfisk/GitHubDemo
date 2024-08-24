@@ -40,8 +40,8 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            az bicep build --file main.bicep --outfile main.json
-            az bicep build-params --file main.bicepparam --outfile main.parameters.json
+            az bicep build --file infrastructure/main.bicep --outfile infrastructure/main.json
+            az bicep build-params --file infrastructure/main.bicepparam --outfile infrastructure/main.parameters.json
 
       - name: Upload Bicep Files
         uses: actions/upload-artifact@v4
@@ -84,8 +84,8 @@ jobs:
         with:
           scope: resourcegroup
           resourceGroupName: ${{ vars.RESOURCE_GROUP }}
-          template: drop/infrastructure/main.bicep
-          parameters: drop/infrastructure/main.bicepparam
+          template: infrastructure/main.bicep
+          parameters: infrastructure/main.bicepparam
           deploymentMode: validation
 
       - name: What-if ARM Deployment
@@ -93,7 +93,7 @@ jobs:
         with:
           scope: resourcegroup
           resourceGroupName: ${{ vars.RESOURCE_GROUP }}
-          template: drop/infrastructure/main.bicep
-          parameters: drop/infrastructure/main.bicepparam
+          template: infrastructure/main.bicep
+          parameters: infrastructure/main.bicepparam
           deploymentMode: incremental
           additionalArguments: --what-if
