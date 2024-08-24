@@ -4,7 +4,9 @@
     "cSpell.enableFiletypes": [
         "*"
     ],
-    "cSpell.words": [],
+    "cSpell.words": [
+        "azcliversion"
+    ],
     "editor.trimAutoWhitespace": true,
     "files.autoSave": "afterDelay",
     "files.trimFinalNewlines": true,
