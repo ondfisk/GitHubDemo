@@ -46,7 +46,7 @@ jobs:
       - name: Upload Bicep Files
         uses: actions/upload-artifact@v4
         with:
-          name: drop
+          name: infrastructure
           path: infrastructure/
 
   test:
@@ -63,7 +63,7 @@ jobs:
       - name: Download Bicep Files
         uses: actions/download-artifact@v4
         with:
-          name: drop
+          name: infrastructure
 
       - name: Azure Login
         uses: azure/login@v2
@@ -84,8 +84,8 @@ jobs:
         with:
           scope: resourcegroup
           resourceGroupName: ${{ vars.RESOURCE_GROUP }}
-          template: drop/infrastructure/main.bicep
-          parameters: drop/infrastructure/main.bicepparam
+          template: infrastructure/main.bicep
+          parameters: infrastructure/main.bicepparam
           deploymentMode: Validate
 
       - name: What-if ARM Deployment
@@ -93,7 +93,7 @@ jobs:
         with:
           scope: resourcegroup
           resourceGroupName: ${{ vars.RESOURCE_GROUP }}
-          template: drop/infrastructure/main.bicep
-          parameters: drop/infrastructure/main.bicepparam
+          template: infrastructure/main.bicep
+          parameters: infrastructure/main.bicepparam
           deploymentMode: Incremental
           additionalArguments: --what-if
