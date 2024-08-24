@@ -84,8 +84,8 @@ jobs:
         with:
           scope: resourcegroup
           resourceGroupName: ${{ vars.RESOURCE_GROUP }}
-          template: infrastructure/main.bicep
-          parameters: infrastructure/main.bicepparam
+          template: drop/infrastructure/main.bicep
+          parameters: drop/infrastructure/main.bicepparam
           deploymentMode: Validate
 
       - name: What-if ARM Deployment

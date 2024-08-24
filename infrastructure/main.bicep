@@ -45,9 +45,6 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
       scmMinTlsVersion: '1.2'
       ftpsState: 'Disabled'
       healthCheckPath: '/healthz'
-      detailedErrorLoggingEnabled: true
-      requestTracingEnabled: true
-      httpLoggingEnabled: true
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'
@@ -74,7 +71,6 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
       scmMinTlsVersion: '1.2'
       ftpsState: 'Disabled'
       healthCheckPath: '/healthz'
-      detailedErrorLoggingEnabled: true
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'

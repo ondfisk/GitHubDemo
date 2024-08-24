@@ -14,6 +14,7 @@
     "DOTNETCORE",
     "Entra",
     "healthz",
+    "MSSQL",
     "outfile",
     "pwsh",
     "resourcegroup",
