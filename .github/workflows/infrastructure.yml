@@ -1,0 +1,52 @@
+---
+name: Infrastructure
+
+on:
+  push:
+    branches:
+        - main
+    paths:
+        - .github/workflows/infrastructure.yml
+        - infrastructure/**
+  pull_request:
+    branches:
+        - main
+    paths:
+        - .github/workflows/infrastructure.yml
+        - infrastructure/**
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    permissions:
+      id-token: write
+    environment: Staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az group create --name ${{ vars.RESOURCE_GROUP }} --location ${{ vars.LOCATION }}

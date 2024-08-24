@@ -13,6 +13,7 @@ This project demonstrates a number of capabilities in Azure DevOps and Microsoft
 
 ## Prerequisites
 
+1. Create a *Microsoft Entra application (SPN)* and connect it to *GitHub* cf. <https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect>.
 1. Create SQL admin group:
 
     ```bash
@@ -28,7 +29,7 @@ This project demonstrates a number of capabilities in Azure DevOps and Microsoft
     az ad group member add --group "$GROUP" --member-id $ME
     ```
 
-1. Add the *Azure Service Connection* to the group.
+1. Add the *SPN* to the group.
 1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
 1. Deploy the *infrastructure* pipeline
 1. Connect web app to SQL database,
@@ -39,7 +40,7 @@ This project demonstrates a number of capabilities in Azure DevOps and Microsoft
     - When running the commands, answer `n` to the question *"Do you want to set current user as Entra admin? (y/n)"*
 
     ```bash
-    RESOURCE_GROUP=MyWebApp
+    RESOURCE_GROUP=MyWebApp2
     SQL_SERVER=sql-968b52419901
     WEBAPP=web-968b52419901
     DATABASE=Movies
