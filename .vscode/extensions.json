@@ -1,11 +1,11 @@
 {
-    "recommendations": [
-        "davidanson.vscode-markdownlint",
-        "ms-vscode.azure-account",
-        "ms-azuretools.vscode-bicep",
-        "ms-dotnettools.vscodeintellicode-csharp",
-        "ms-azuretools.vscode-azureappservice",
-        "redhat.vscode-yaml",
-        "streetsidesoftware.code-spell-checker"
-    ]
+  "recommendations": [
+    "davidanson.vscode-markdownlint",
+    "ms-vscode.azure-account",
+    "ms-azuretools.vscode-bicep",
+    "ms-dotnettools.vscodeintellicode-csharp",
+    "ms-azuretools.vscode-azureappservice",
+    "redhat.vscode-yaml",
+    "streetsidesoftware.code-spell-checker"
+  ]
 }

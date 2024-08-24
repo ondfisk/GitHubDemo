@@ -1,19 +1,22 @@
 ---
 name: Infrastructure
 
-on:
+"on":
   push:
     branches:
-        - main
+      - main
     paths:
-        - .github/workflows/infrastructure.yml
-        - infrastructure/**
+      - .github/workflows/infrastructure.yml
+      - infrastructure/**
   pull_request:
     branches:
-        - main
+      - main
     paths:
-        - .github/workflows/infrastructure.yml
-        - infrastructure/**
+      - .github/workflows/infrastructure.yml
+      - infrastructure/**
+  workflow_dispatch: {}
+
+permissions: {}
 
 jobs:
   build:
@@ -29,14 +32,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
-    permissions:
-      id-token: write
     environment: Staging
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    permissions:
+      id-token: write
 
+    steps:
       - name: Azure Login
         uses: azure/login@v2
         with:
