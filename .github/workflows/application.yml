@@ -18,12 +18,17 @@ on:
         - tests/**
   workflow_dispatch: { }
 
+permissions: {}
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     env:
       configuration: Release
+      
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout

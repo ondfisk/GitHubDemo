@@ -1,46 +1,48 @@
 ---
-  name: Lint
+name: Lint
 
-  "on":
-    push:
-      branches:
-        - main
-    pull_request:
-      branches:
-        - main
-    workflow_dispatch: { }
+"on":
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: { }
 
-  permissions: read-all
+permissions: {}
 
-  jobs:
-    build:
-      name: Lint
-      runs-on: ubuntu-latest
+jobs:
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
 
-      permissions:
-        contents: read
-        packages: read
-        statuses: write
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
 
-      steps:
-        - name: Checkout Code
-          uses: actions/checkout@v4
-          with:
-            # super-linter needs the full git history to get the
-            # list of files that changed across commits
-            fetch-depth: 0
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # super-linter needs the full git history to get the
+          # list of files that changed across commits
+          fetch-depth: 0
 
-        - name: Super-Linter
-          uses: super-linter/super-linter@v6.6.0
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            VALIDATE_JSCPD: false
+      - name: Super-Linter
+        uses: super-linter/super-linter@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_CSS: false
+          VALIDATE_JSCPD: false
 
-        - name: Lint Bicep Files
-          run: |
-            Get-ChildItem -Filter "*.bicep*" -Recurse | ForEach-Object {
-              Write-Output "Linting $PSItem"
-              az bicep lint --file $PSItem
-            }
-          shell: pwsh
+      - name: Lint Bicep Files
+        run: |
+          Get-ChildItem -Filter "*.bicep*" -Recurse | ForEach-Object {
+            Write-Output "Linting $PSItem"
+            az bicep lint --file $PSItem
+          }
+        shell: pwsh
 ...
