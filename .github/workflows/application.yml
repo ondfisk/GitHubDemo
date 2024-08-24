@@ -118,7 +118,7 @@ jobs:
           resource-group-name: ${{ vars.RESOURCE_GROUP }}
           app-name: ${{ vars.WEBAPP }}
           slot-name: ${{ vars.DEPLOYMENT_SLOT }}
-          package: app/
+          package: app.zip
 
   production:
     name: Deploy to Production
