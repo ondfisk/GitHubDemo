@@ -5,10 +5,20 @@
     "*"
   ],
   "cSpell.words": [
+    "Antiforgery",
+    "appsettings",
     "ASPNETCORE",
     "azcliversion",
+    "bicepparam",
+    "connectionstrings",
+    "DOTNETCORE",
     "Entra",
-    "pwsh"
+    "healthz",
+    "MSSQL",
+    "outfile",
+    "pwsh",
+    "resourcegroup",
+    "serverfarms"
   ],
   "editor.trimAutoWhitespace": true,
   "files.autoSave": "afterDelay",

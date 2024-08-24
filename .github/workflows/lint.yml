@@ -1,7 +1,7 @@
 ---
 name: Lint
 
-"on":
+on:
   push:
     branches:
       - main
@@ -37,12 +37,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_CSS: false
           VALIDATE_CSS_PRETTIER: false
+          VALIDATE_JSCPD: false
           VALIDATE_JSON_PRETTIER: false
-
-      - name: Lint Bicep Files
-        run: |
-          Get-ChildItem -Filter "*.bicep*" -Recurse | ForEach-Object {
-            Write-Output "Linting $PSItem"
-            az bicep lint --file $PSItem
-          }
-        shell: pwsh

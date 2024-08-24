@@ -1,0 +1,13 @@
+using './main.bicep'
+
+param location = 'swedencentral'
+param logAnalyticsWorkspaceName = 'MyLogAnalyticsWorkspace'
+param applicationInsightsName = 'web-968b52419901'
+param appServicePlanName = 'MyAppServicePlan'
+param webAppName = 'web-968b52419901'
+param sqlServerName = 'sql-968b52419901'
+param databaseName = 'Movies'
+param databaseSku = 'Basic'
+param sqlAdminGroupName = 'Movie Database Admins'
+param sqlAdminGroupId = 'dbfc8f02-3dbb-410d-9255-a999e1d02267'
+param stagingDatabaseSku = 'Basic'
