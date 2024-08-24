@@ -26,9 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       configuration: Release
-      
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout
