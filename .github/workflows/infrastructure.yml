@@ -86,7 +86,7 @@ jobs:
           resourceGroupName: ${{ vars.RESOURCE_GROUP }}
           template: infrastructure/main.bicep
           parameters: infrastructure/main.bicepparam
-          deploymentMode: validation
+          deploymentMode: Validate
 
       - name: What-if ARM Deployment
         uses: azure/arm-deploy@v2
@@ -95,5 +95,5 @@ jobs:
           resourceGroupName: ${{ vars.RESOURCE_GROUP }}
           template: infrastructure/main.bicep
           parameters: infrastructure/main.bicepparam
-          deploymentMode: incremental
+          deploymentMode: Incremental
           additionalArguments: --what-if
