@@ -60,7 +60,7 @@ jobs:
       - name: Install EF Tool
         run: dotnet tool install --global dotnet-ef --prerelease
 
-      - name: Build EF migrations bundle
+      - name: Build EF Migrations Bundle
         run: dotnet ef migrations bundle --project src/MyApp/ --configuration ${{ env.configuration }} --no-build --self-contained --output efbundle
 
       - name: Upload Artifact
@@ -109,7 +109,7 @@ jobs:
           inlineScript: |
             CONNECTION_STRING="$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query [].value --output tsv)"
             chmod +x ./efbundle
-            ./efbundle --connection "$CONNECTION_STRING"
+            # ./efbundle --connection "$CONNECTION_STRING"
 
       - name: Deploy
         id: deploy-to-webapp
@@ -154,7 +154,7 @@ jobs:
           inlineScript: |
             CONNECTION_STRING="$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query [].value --output tsv)"
             chmod +x ./efbundle
-            ./efbundle --connection "$CONNECTION_STRING"
+            # ./efbundle --connection "$CONNECTION_STRING"
 
       - name: Swap Staging With Production
         uses: azure/cli@v2
