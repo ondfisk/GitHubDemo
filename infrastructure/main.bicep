@@ -44,6 +44,10 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
       minTlsVersion: '1.2'
       scmMinTlsVersion: '1.2'
       ftpsState: 'Disabled'
+      healthCheckPath: '/healthz'
+      detailedErrorLoggingEnabled: true
+      requestTracingEnabled: true
+      httpLoggingEnabled: true
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'
@@ -69,6 +73,8 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
       minTlsVersion: '1.2'
       scmMinTlsVersion: '1.2'
       ftpsState: 'Disabled'
+      healthCheckPath: '/healthz'
+      detailedErrorLoggingEnabled: true
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'
@@ -160,6 +166,7 @@ resource sqlServer 'Microsoft.Sql/servers@2023-02-01-preview' = {
       principalType: 'Group'
       sid: sqlAdminGroupId
     }
+    minimalTlsVersion: '1.2'
   }
 
   resource azureServices 'firewallRules' = {
@@ -178,7 +185,8 @@ resource database 'Microsoft.Sql/servers/databases@2023-02-01-preview' = {
   sku: {
     name: databaseSku
   }
-  properties: {}
+  properties: {
+  }
 }
 
 resource slotConnectionStrings 'Microsoft.Web/sites/slots/config@2022-09-01' = {
