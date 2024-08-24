@@ -27,6 +27,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Lint Bicep Files
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az bicep lint --file infrastructure/main.bicep
+            az bicep lint --file infrastructure/main.bicepparam
+
+      - name: Build Bicep Files
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az bicep build --file main.bicep --outfile main.json
+            az bicep build-params --file main.bicepparam --outfile main.parameters.json
+
+      - name: Upload Bicep Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: drop
+          path: infrastructure/
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -38,6 +60,11 @@ jobs:
       id-token: write
 
     steps:
+      - name: Download Bicep Files
+        uses: actions/download-artifact@v4
+        with:
+          name: drop
+
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -51,3 +78,22 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az group create --name ${{ vars.RESOURCE_GROUP }} --location ${{ vars.LOCATION }}
+
+      - name: Validate ARM Deployment
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          resourceGroupName: ${{ vars.RESOURCE_GROUP }}
+          template: drop/infrastructure/main.bicep
+          parameters: drop/infrastructure/main.bicepparam
+          deploymentMode: validation
+
+      - name: What-if ARM Deployment
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          resourceGroupName: ${{ vars.RESOURCE_GROUP }}
+          template: drop/infrastructure/main.bicep
+          parameters: drop/infrastructure/main.bicepparam
+          deploymentMode: incremental
+          additionalArguments: --what-if

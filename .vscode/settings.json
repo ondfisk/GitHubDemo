@@ -5,10 +5,17 @@
     "*"
   ],
   "cSpell.words": [
+    "appsettings",
     "ASPNETCORE",
     "azcliversion",
+    "bicepparam",
+    "connectionstrings",
+    "DOTNETCORE",
     "Entra",
-    "pwsh"
+    "outfile",
+    "pwsh",
+    "resourcegroup",
+    "serverfarms"
   ],
   "editor.trimAutoWhitespace": true,
   "files.autoSave": "afterDelay",
