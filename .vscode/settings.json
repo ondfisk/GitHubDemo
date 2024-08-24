@@ -18,7 +18,8 @@
     "outfile",
     "pwsh",
     "resourcegroup",
-    "serverfarms"
+    "serverfarms",
+    "Testcontainers"
   ],
   "editor.trimAutoWhitespace": true,
   "files.autoSave": "afterDelay",

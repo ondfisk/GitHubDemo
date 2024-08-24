@@ -64,7 +64,7 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
     reserved: true
     hyperV: false
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|8.0'
+      linuxFxVersion: 'DOTNETCORE|9.0'
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
