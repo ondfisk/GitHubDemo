@@ -64,5 +64,5 @@ This project demonstrates a number of capabilities in Azure DevOps and Microsoft
 To lint codebase locally you can run [Super-Linter](https://github.com/super-linter/super-linter):
 
 ```bash
-docker run -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -e DEFAULT_BRANCH=main -e VALIDATE_CSS=false -e VALIDATE_CSS_PRETTIER=false -e -v .:/tmp/lint ghcr.io/super-linter/super-linter:latest
+docker run -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -e DEFAULT_BRANCH=main -e VALIDATE_CSS=false -e VALIDATE_CSS_PRETTIER=false -e VALIDATE_JSCPD=false -e VALIDATE_JSON_PRETTIER=false -v .:/tmp/lint ghcr.io/super-linter/super-linter:latest
 ```
