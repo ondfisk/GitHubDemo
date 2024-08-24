@@ -104,7 +104,7 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            CONNECTION_STRING=$(az webapp config connection-string list --name $(webApp) --slot $(deploymentSlot) --resource-group $(resourceGroup) --query [].value --output tsv)
+            CONNECTION_STRING="$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query [].value --output tsv)"
             chmod +x ./efbundle
             ./efbundle --connection "$CONNECTION_STRING"
 
