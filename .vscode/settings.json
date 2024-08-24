@@ -12,6 +12,7 @@
     "bicepparam",
     "connectionstrings",
     "DOTNETCORE",
+    "efbundle",
     "Entra",
     "healthz",
     "MSSQL",
@@ -19,7 +20,8 @@
     "pwsh",
     "resourcegroup",
     "serverfarms",
-    "Testcontainers"
+    "Testcontainers",
+    "webapps"
   ],
   "editor.trimAutoWhitespace": true,
   "files.autoSave": "afterDelay",

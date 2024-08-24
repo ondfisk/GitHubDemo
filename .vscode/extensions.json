@@ -2,6 +2,7 @@
   "recommendations": [
     "davidanson.vscode-markdownlint",
     "github.vscode-github-actions",
+    "github.vscode-pull-request-github",
     "ms-vscode.azure-account",
     "ms-azuretools.vscode-bicep",
     "ms-dotnettools.vscodeintellicode-csharp",
