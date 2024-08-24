@@ -48,11 +48,14 @@ jobs:
       - name: .NET Publish
         run: dotnet publish src/MyApp/MyApp.csproj --no-build --configuration ${{ env.configuration }} --output app
 
-      - name: Upload artifact
+      - name: Zip Artifact
+        run: zip -r app.zip app
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app
-          path: app/
+          path: app.zip
 
       - name: Install EF Tool
         run: dotnet tool install --global dotnet-ef --prerelease
@@ -60,13 +63,13 @@ jobs:
       - name: Build EF migrations bundle
         run: dotnet ef migrations bundle --project src/MyApp/ --configuration ${{ env.configuration }} --no-build --self-contained --output efbundle
 
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: efbundle
           path: efbundle
 
-  deploy:
+  staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     needs: build
@@ -77,13 +80,13 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download artifact
+      - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: app
-          path: app/
+          path: .
 
-      - name: Download artifact
+      - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: efbundle
@@ -99,7 +102,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Apply EF migrations bundle
+      - name: Apply EF Migrations Bundle
         uses: azure/cli@v2
         with:
           azcliversion: latest
@@ -116,3 +119,46 @@ jobs:
           app-name: ${{ vars.WEBAPP }}
           slot-name: ${{ vars.DEPLOYMENT_SLOT }}
           package: app/
+
+  production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: staging
+    if: github.ref == 'refs/heads/main'
+    environment: Production
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: efbundle
+          path: .
+
+      - name: Install EF Tool
+        run: dotnet tool install --global dotnet-ef --prerelease
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Apply EF Migrations Bundle
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            CONNECTION_STRING="$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query [].value --output tsv)"
+            chmod +x ./efbundle
+            ./efbundle --connection "$CONNECTION_STRING"
+
+      - name: Swap Staging With Production
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az webapp deployment slot swap --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }}

@@ -100,6 +100,7 @@ resource appSettings 'Microsoft.Web/sites/config@2023-12-01' = {
     APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
     ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
     XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
+    WEBSITE_RUN_FROM_PACKAGE: '1'
   }
 }
 
@@ -145,6 +146,7 @@ resource stagingAppSettings 'Microsoft.Web/sites/slots/config@2023-12-01' = {
     APPLICATIONINSIGHTS_CONNECTION_STRING: stagingApplicationInsights.properties.ConnectionString
     ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
     XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
+    WEBSITE_RUN_FROM_PACKAGE: '1'
   }
 }
 
