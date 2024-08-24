@@ -4,17 +4,17 @@ name: Infrastructure
 "on":
   push:
     branches:
-        - main
+      - main
     paths:
-        - .github/workflows/infrastructure.yml
-        - infrastructure/**
+      - .github/workflows/infrastructure.yml
+      - infrastructure/**
   pull_request:
     branches:
-        - main
+      - main
     paths:
-        - .github/workflows/infrastructure.yml
-        - infrastructure/**
-  workflow_dispatch: { }
+      - .github/workflows/infrastructure.yml
+      - infrastructure/**
+  workflow_dispatch: {}
 
 permissions: {}
 
@@ -51,4 +51,3 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az group create --name ${{ vars.RESOURCE_GROUP }} --location ${{ vars.LOCATION }}
-...

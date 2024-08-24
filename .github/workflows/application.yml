@@ -4,19 +4,19 @@ name: Application
 on:
   push:
     branches:
-        - main
+      - main
     paths:
-        - .github/workflows/application.yml
-        - src/**
-        - tests/**
+      - .github/workflows/application.yml
+      - src/**
+      - tests/**
   pull_request:
     branches:
-        - main
+      - main
     paths:
-        - .github/workflows/application.yml
-        - src/**
-        - tests/**
-  workflow_dispatch: { }
+      - .github/workflows/application.yml
+      - src/**
+      - tests/**
+  workflow_dispatch: {}
 
 permissions: {}
 
@@ -44,4 +44,3 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --verbosity normal --configuration ${{ env.configuration }}
-...

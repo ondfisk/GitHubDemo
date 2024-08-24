@@ -8,7 +8,7 @@ name: Lint
   pull_request:
     branches:
       - main
-  workflow_dispatch: { }
+  workflow_dispatch: {}
 
 permissions: {}
 
@@ -36,12 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_CSS: false
-          VALIDATE_JSCPD: false
-          FIX_CSS_PRETTIER: false
-          FIX_MARKDOWN: true
-          FIX_JSON: true
-          FIX_JSONC: true
-          FIX_YAML: true
+          VALIDATE_CSS_PRETTIER: false
 
       - name: Lint Bicep Files
         run: |
@@ -50,4 +45,3 @@ jobs:
             az bicep lint --file $PSItem
           }
         shell: pwsh
-...

@@ -1,18 +1,18 @@
 {
-    "cSpell.enabled": true,
-    "cSpell.language": "en",
-    "cSpell.enableFiletypes": [
-        "*"
-    ],
-    "cSpell.words": [
-        "azcliversion",
-        "pwsh"
-    ],
-    "editor.trimAutoWhitespace": true,
-    "files.autoSave": "afterDelay",
-    "files.trimFinalNewlines": true,
-    "files.trimTrailingWhitespace": true,
-    "[github-actions-workflow]": {
-        "editor.tabSize": 2
-    }
+  "cSpell.enabled": true,
+  "cSpell.language": "en",
+  "cSpell.enableFiletypes": ["*"],
+  "cSpell.words": [
+    "ASPNETCORE",
+    "azcliversion",
+    "Entra",
+    "pwsh"
+  ],
+  "editor.trimAutoWhitespace": true,
+  "files.autoSave": "afterDelay",
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "[github-actions-workflow]": {
+    "editor.tabSize": 2
+  }
 }
