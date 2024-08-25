@@ -60,14 +60,14 @@ jobs:
       - name: Install EF Tool
         run: dotnet tool install --global dotnet-ef --prerelease
 
-      - name: Build EF Migrations Bundle
-        run: dotnet ef migrations bundle --project src/MyApp/ --configuration ${{ env.configuration }} --no-build --self-contained --output efbundle
+      - name: Generate EF Migration Script
+        run: dotnet ef migrations script --idempotent --project src/MyApp/ --startup-project src/MyApp/ --no-build --output migrate.sql
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: efbundle
-          path: efbundle
+          name: migrate.sql
+          path: migrate.sql
 
   staging:
     name: Deploy to Staging
@@ -80,20 +80,17 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download Artifact
+      - name: Download App
         uses: actions/download-artifact@v4
         with:
           name: app
           path: .
 
-      - name: Download Artifact
+      - name: Download EF Migration Script
         uses: actions/download-artifact@v4
         with:
-          name: efbundle
+          name: migrate.sql
           path: .
-
-      - name: Install EF Tool
-        run: dotnet tool install --global dotnet-ef --prerelease
 
       - name: Azure Login
         uses: azure/login@v2
@@ -102,14 +99,18 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Apply EF Migrations Bundle
+      - name: Get Connection String
         uses: azure/cli@v2
         with:
           azcliversion: latest
           inlineScript: |
-            CONNECTION_STRING="$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query [].value --output tsv)"
-            chmod +x ./efbundle
-            # ./efbundle --connection "$CONNECTION_STRING"
+            echo "CONNECTION_STRING=$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query [].value --output tsv)" >> "$GITHUB_ENV"
+
+      - name: Apply EF migration script
+        uses: Azure/sql-action@v2
+        with:
+          connection-string: ${{ env.CONNECTION_STRING }}
+          path: migrate.sql
 
       - name: Deploy Web App
         uses: azure/cli@v2
@@ -129,14 +130,11 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download Artifact
+      - name: Download EF Migration Script
         uses: actions/download-artifact@v4
         with:
-          name: efbundle
+          name: migrate.sql
           path: .
-
-      - name: Install EF Tool
-        run: dotnet tool install --global dotnet-ef --prerelease
 
       - name: Azure Login
         uses: azure/login@v2
@@ -145,14 +143,18 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Apply EF Migrations Bundle
+      - name: Get Connection String
         uses: azure/cli@v2
         with:
           azcliversion: latest
           inlineScript: |
-            CONNECTION_STRING="$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query [].value --output tsv)"
-            chmod +x ./efbundle
-            # ./efbundle --connection "$CONNECTION_STRING"
+            echo "CONNECTION_STRING=$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query [].value --output tsv)" >> "$GITHUB_ENV"
+
+      - name: Apply EF migration script
+        uses: Azure/sql-action@v2
+        with:
+          connection-string: ${{ env.CONNECTION_STRING }}
+          path: migrate.sql
 
       - name: Swap Staging With Production
         uses: azure/cli@v2
