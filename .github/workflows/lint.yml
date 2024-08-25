@@ -31,15 +31,11 @@ jobs:
           # list of files that changed across commits
           fetch-depth: 0
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.100-preview.6.24328.19
-
       - name: Super-Linter
         uses: super-linter/super-linter@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_CSHARP: false # temporary workaround for linter not support .NET 9
           VALIDATE_CSS: false
           VALIDATE_CSS_PRETTIER: false
           VALIDATE_JSCPD: false
