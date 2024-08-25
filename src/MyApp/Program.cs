@@ -1,3 +1,4 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using MyApp.Features;
 using MyApp.Features.Movies;
@@ -6,6 +7,10 @@ using MyApp.Features.Shared;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddOpenTelemetry().UseAzureMonitor();
+}
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHealthChecks();

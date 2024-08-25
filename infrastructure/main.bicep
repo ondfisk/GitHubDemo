@@ -38,13 +38,15 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
     reserved: true
     hyperV: false
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|8.0'
+      linuxFxVersion: 'DOTNETCORE|9.0'
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
       scmMinTlsVersion: '1.2'
       ftpsState: 'Disabled'
       healthCheckPath: '/healthz'
+      httpLoggingEnabled: true
+      detailedErrorLoggingEnabled: true
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'
@@ -71,9 +73,27 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
       scmMinTlsVersion: '1.2'
       ftpsState: 'Disabled'
       healthCheckPath: '/healthz'
+      httpLoggingEnabled: true
+      detailedErrorLoggingEnabled: true
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'
+  }
+}
+
+resource webAppBasicPublishingCredentialsFtp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2023-12-01' = {
+  name: 'ftp'
+  parent: webApp
+  properties: {
+    allow: false
+  }
+}
+
+resource slotBasicPublishingCredentialsFtp 'Microsoft.Web/sites/slots/basicPublishingCredentialsPolicies@2023-12-01' = {
+  name: 'ftp'
+  parent: deploymentSlot
+  properties: {
+    allow: false
   }
 }
 

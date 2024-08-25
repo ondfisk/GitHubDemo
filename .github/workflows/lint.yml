@@ -35,6 +35,7 @@ jobs:
         uses: super-linter/super-linter@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_CSHARP: false # temporary workaround for linter not support .NET 9
           VALIDATE_CSS: false
           VALIDATE_CSS_PRETTIER: false
           VALIDATE_JSCPD: false

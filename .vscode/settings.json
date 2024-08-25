@@ -17,6 +17,8 @@
     "healthz",
     "MSSQL",
     "outfile",
+    "popd",
+    "pushd",
     "pwsh",
     "resourcegroup",
     "serverfarms",
