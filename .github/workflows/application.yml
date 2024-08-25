@@ -34,7 +34,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.100-preview.7.24407.12
+          dotnet-version: 9.0.0-preview.6.24327.4
 
       - name: .NET Restore
         run: dotnet restore
@@ -49,7 +49,7 @@ jobs:
         run: dotnet publish src/MyApp/MyApp.csproj --no-build --configuration ${{ env.configuration }} --output app
 
       - name: Zip Artifact
-        run: zip -r app.zip app
+        run: pushd app && zip -r ../app.zip . && popd
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -111,14 +111,12 @@ jobs:
             chmod +x ./efbundle
             # ./efbundle --connection "$CONNECTION_STRING"
 
-      - name: Deploy
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
+      - name: Deploy Web App
+        uses: azure/cli@v2
         with:
-          resource-group-name: ${{ vars.RESOURCE_GROUP }}
-          app-name: ${{ vars.WEBAPP }}
-          slot-name: ${{ vars.DEPLOYMENT_SLOT }}
-          package: app.zip
+          azcliversion: latest
+          inlineScript: |
+            az webapp deploy --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --src-path app.zip --clean
 
   production:
     name: Deploy to Production
