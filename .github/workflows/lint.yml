@@ -34,7 +34,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.0-preview.6.24327.4
+          dotnet-version: 9.0.100-preview.6.24328.19
 
       - name: Super-Linter
         uses: super-linter/super-linter@v7
