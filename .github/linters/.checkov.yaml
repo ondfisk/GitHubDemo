@@ -10,9 +10,9 @@ skip-check:
   - CKV_AZURE_27 # Ensure that 'Email service and co-administrators' is 'Enabled' for MSSQL servers
   - CKV_AZURE_35 # Ensure default network access rule for Storage Accounts is set to deny
   - CKV_AZURE_59 # Ensure that Storage Accounts disallow public access
-  # - CKV_AZURE_63 # Ensure that App service enables HTTP logging
-  # - CKV_AZURE_65 # Ensure that App service enables detailed error messages
-  # - CKV_AZURE_66 # Ensure that App service enables failed request tracing
+  - CKV_AZURE_63 # Ensure that App service enables HTTP logging
+  - CKV_AZURE_65 # Ensure that App service enables detailed error messages
+  - CKV_AZURE_66 # Ensure that App service enables failed request tracing
   - CKV_AZURE_80 # Ensure that 'Net Framework' version is the latest, if used as a part of the web app
   - CKV_AZURE_88 # Ensure that App Services use Azure Files
   - CKV_AZURE_109 # Ensure that Key Vault allows firewall rules settings
