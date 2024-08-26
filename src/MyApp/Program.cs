@@ -11,10 +11,8 @@ if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddOpenTelemetry().UseAzureMonitor();
 }
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddHealthChecks();
-
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("AppDbContext")));
 builder.Services.AddScoped<IMovieService, MovieService>();
 
@@ -34,7 +32,6 @@ app.UseAntiforgery();
 
 app.MapHealthChecks("/healthz");
 app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();

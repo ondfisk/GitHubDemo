@@ -66,3 +66,5 @@ To lint codebase locally you can run [Super-Linter](https://github.com/super-lin
 ```bash
 docker run -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -e DEFAULT_BRANCH=main -e VALIDATE_CSS=false -e VALIDATE_CSS_PRETTIER=false -e VALIDATE_JSCPD=false -e VALIDATE_JSON_PRETTIER=false -v .:/tmp/lint ghcr.io/super-linter/super-linter:latest
 ```
+
+You can find the Azure DevOps version [here](https://dev.azure.com/ondfisk/AzureDevOpsDemo).
