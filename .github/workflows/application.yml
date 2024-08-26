@@ -76,6 +76,9 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
     environment: Staging
 
+    env:
+      CONNECTION_STRING:
+
     permissions:
       id-token: write
 
@@ -125,6 +128,9 @@ jobs:
     needs: staging
     if: github.ref == 'refs/heads/main'
     environment: Production
+
+    env:
+      CONNECTION_STRING:
 
     permissions:
       id-token: write

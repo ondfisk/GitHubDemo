@@ -203,8 +203,7 @@ resource database 'Microsoft.Sql/servers/databases@2023-02-01-preview' = {
   sku: {
     name: databaseSku
   }
-  properties: {
-  }
+  properties: {}
 }
 
 resource slotConnectionStrings 'Microsoft.Web/sites/slots/config@2022-09-01' = {
