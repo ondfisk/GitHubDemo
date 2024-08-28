@@ -1,6 +1,6 @@
-# Azure DevOps Demo
+# GitHub Demo
 
-This project demonstrates a number of capabilities in Azure DevOps and Microsoft Azure:
+This project demonstrates a number of capabilities in GitHub and Microsoft Azure:
 
 - Continuous Planning using _GitHub Issues_
 - Continuous Integration using _GitHub Repositories_ and _GitHub Actions_
