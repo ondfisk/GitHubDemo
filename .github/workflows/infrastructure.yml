@@ -21,14 +21,11 @@ permissions: {}
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install libicu
-        run: sudo apt-get install libicu-dev
 
       - name: Lint Bicep Files
         uses: azure/cli@v2
