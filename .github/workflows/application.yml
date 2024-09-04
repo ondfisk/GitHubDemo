@@ -105,7 +105,7 @@ jobs:
       - name: Get Connection String
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.63.0
           inlineScript: |
             echo "CONNECTION_STRING=$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query [].value --output tsv)" >> "$GITHUB_ENV"
 
@@ -118,7 +118,7 @@ jobs:
       - name: Deploy Web App
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.63.0
           inlineScript: |
             az webapp deploy --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --src-path app.zip --clean
 
@@ -152,7 +152,7 @@ jobs:
       - name: Get Connection String
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.63.0
           inlineScript: |
             echo "CONNECTION_STRING=$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query [].value --output tsv)" >> "$GITHUB_ENV"
 
@@ -165,6 +165,6 @@ jobs:
       - name: Swap Staging With Production
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.63.0
           inlineScript: |
             az webapp deployment slot swap --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }}
