@@ -41,8 +41,8 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
    ```bash
    RESOURCE_GROUP=MyWebApp2
-   SQL_SERVER=sql-096aaa61cb1c
-   WEBAPP=web-096aaa61cb1c
+   SQL_SERVER=sql-968b52419901
+   WEBAPP=web-968b52419901
    DATABASE=Movies
 
    az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE # --config-connstr (in preview; to be enabled later)
