@@ -32,6 +32,7 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
+            sudo apt-get install libicu-dev
             az bicep lint --file infrastructure/main.bicep
             az bicep lint --file infrastructure/main.bicepparam
 
