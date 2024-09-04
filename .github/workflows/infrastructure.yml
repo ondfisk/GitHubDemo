@@ -27,12 +27,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install libicu
+        run: sudo apt-get install libicu-dev
+
       - name: Lint Bicep Files
         uses: azure/cli@v2
         with:
           azcliversion: latest
           inlineScript: |
-            az config set bicep.use_binary_from_path=true
             az bicep lint --file infrastructure/main.bicep
             az bicep lint --file infrastructure/main.bicepparam
 
@@ -41,7 +43,6 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            az config set bicep.use_binary_from_path=true
             az bicep build --file infrastructure/main.bicep --outfile infrastructure/main.json
             az bicep build-params --file infrastructure/main.bicepparam --outfile infrastructure/main.parameters.json
 
