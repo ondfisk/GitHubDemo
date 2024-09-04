@@ -7,4 +7,5 @@ public class Movie
     public int? DirectorId { get; set; }
     public Person? Director { get; set; }
     public int Year { get; set; }
+    public double? Rating { get; set; }
 }

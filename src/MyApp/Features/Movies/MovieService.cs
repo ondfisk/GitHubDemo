@@ -10,6 +10,6 @@ public class MovieService(AppDbContext context) : IMovieService
     public async Task<IEnumerable<MovieDTO>> ReadAll() =>
         await _context.Movies
             .OrderBy(m => m.Title)
-            .Select(static m => new MovieDTO(m.Id, m.Title, m.Director != null ? m.Director.Name : null, m.Year))
+            .Select(static m => new MovieDTO(m.Id, m.Title, m.Director != null ? m.Director.Name : null, m.Year, m.Rating))
             .ToArrayAsync();
 }

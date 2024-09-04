@@ -34,16 +34,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         );
 
         modelBuilder.Entity<Movie>().HasData(
-            new Movie { Id = 1, Title = "The Shawshank Redemption", DirectorId = 1, Year = 1994 },
-            new Movie { Id = 2, Title = "The Godfather", DirectorId = 2, Year = 1972 },
-            new Movie { Id = 3, Title = "The Dark Knight", DirectorId = 3, Year = 2008 },
-            new Movie { Id = 4, Title = "The Godfather Part II", DirectorId = 1, Year = 1974 },
-            new Movie { Id = 5, Title = "12 Angry Men", DirectorId = 4, Year = 1957 },
-            new Movie { Id = 6, Title = "Schindler's List", DirectorId = 5, Year = 1993 },
-            new Movie { Id = 7, Title = "The Lord of the Rings: The Return of the King", DirectorId = 6, Year = 2003 },
-            new Movie { Id = 8, Title = "Pulp Fiction", DirectorId = 7, Year = 1994 },
-            new Movie { Id = 9, Title = "The Lord of the Rings: The Fellowship of the Ring", DirectorId = 6, Year = 2001 },
-            new Movie { Id = 10, Title = "The Good, the Bad and the Ugly", DirectorId = 8, Year = 1966 }
+            new Movie { Id = 1, Title = "The Shawshank Redemption", DirectorId = 1, Year = 1994, Rating = 9.3 },
+            new Movie { Id = 2, Title = "The Godfather", DirectorId = 2, Year = 1972, Rating = 9.2 },
+            new Movie { Id = 3, Title = "The Dark Knight", DirectorId = 3, Year = 2008, Rating = 9.0 },
+            new Movie { Id = 4, Title = "The Godfather Part II", DirectorId = 1, Year = 1974, Rating = 9.0 },
+            new Movie { Id = 5, Title = "12 Angry Men", DirectorId = 4, Year = 1957, Rating = 9.0 },
+            new Movie { Id = 6, Title = "Schindler's List", DirectorId = 5, Year = 1993, Rating = 8.9 },
+            new Movie { Id = 7, Title = "The Lord of the Rings: The Return of the King", DirectorId = 6, Year = 2003, Rating = 8.9 },
+            new Movie { Id = 8, Title = "Pulp Fiction", DirectorId = 7, Year = 1994, Rating = 8.9 },
+            new Movie { Id = 9, Title = "The Lord of the Rings: The Fellowship of the Ring", DirectorId = 6, Year = 2001, Rating = 8.8 },
+            new Movie { Id = 10, Title = "The Good, the Bad and the Ugly", DirectorId = 8, Year = 1966, Rating = 8.8 }
         );
     }
 }
