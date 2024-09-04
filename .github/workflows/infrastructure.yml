@@ -30,7 +30,7 @@ jobs:
       - name: Lint Bicep Files
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.63.0
           inlineScript: |
             az bicep lint --file infrastructure/main.bicep
             az bicep lint --file infrastructure/main.bicepparam
@@ -38,7 +38,7 @@ jobs:
       - name: Build Bicep Files
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.63.0
           inlineScript: |
             az bicep build --file infrastructure/main.bicep --outfile infrastructure/main.json
             az bicep build-params --file infrastructure/main.bicepparam --outfile infrastructure/main.parameters.json
@@ -76,7 +76,7 @@ jobs:
       - name: Create Resource Group
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.63.0
           inlineScript: |
             az group create --name ${{ vars.RESOURCE_GROUP }} --location ${{ vars.LOCATION }}
 
@@ -126,7 +126,7 @@ jobs:
       - name: Create Resource Group
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: 2.63.0
           inlineScript: |
             az group create --name ${{ vars.RESOURCE_GROUP }} --location ${{ vars.LOCATION }}
 
