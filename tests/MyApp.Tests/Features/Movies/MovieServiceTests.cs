@@ -30,7 +30,7 @@ public sealed class MovieServiceTests : IAsyncLifetime
     {
         var movies = await _service.ReadAll();
 
-        var pulpFiction = new MovieDTO(8, "Pulp Fiction", "Quentin Tarantino", 1994);
+        var pulpFiction = new MovieDTO(8, "Pulp Fiction", "Quentin Tarantino", 1994, 8.9);
 
         movies.Should().Contain(pulpFiction);
     }
