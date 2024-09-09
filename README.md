@@ -41,8 +41,8 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
    ```bash
    RESOURCE_GROUP=GitHubDemo
-   SQL_SERVER=ondfisk-githubdemo
-   WEBAPP=ondfisk-githubdemo
+   SQL_SERVER=ondfisk-githubdemo-sql
+   WEBAPP=ondfisk-githubdemo-web
    DATABASE=Movies
 
    az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE # --config-connstr (in preview; to be enabled later)
