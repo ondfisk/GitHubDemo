@@ -1,6 +1,5 @@
 param location string = resourceGroup().location
 param logAnalyticsWorkspaceName string
-param applicationInsightsName string
 param appServicePlanName string
 param webAppName string
 param sqlServerName string
@@ -104,7 +103,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: applicationInsightsName
+  name: webAppName
   location: location
   kind: 'web'
   properties: {
@@ -150,7 +149,7 @@ resource slotConfigNames 'Microsoft.Web/sites/config@2022-09-01' = {
 }
 
 resource stagingApplicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${applicationInsightsName}-staging'
+  name: '${webAppName}-staging'
   location: location
   kind: 'web'
   properties: {
