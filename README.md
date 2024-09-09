@@ -17,8 +17,8 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Create SQL admin group:
 
    ```bash
-   GROUP="Movie Database Admins"
-   GROUP_MAIL_NICKNAME=movie-database-admins
+   GROUP="GitHub Demo Movie Database Admins"
+   GROUP_MAIL_NICKNAME=github-demo-movie-database-admins
    az ad group create --display-name "$GROUP" --mail-nickname $GROUP_MAIL_NICKNAME
    ```
 
@@ -40,9 +40,9 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    - When running the commands, answer `n` to the question _"Do you want to set current user as Entra admin? (y/n)"_
 
    ```bash
-   RESOURCE_GROUP=MyWebApp2
-   SQL_SERVER=sql-968b52419901
-   WEBAPP=web-968b52419901
+   RESOURCE_GROUP=GitHubDemo
+   SQL_SERVER=ondfisk-githubdemo
+   WEBAPP=ondfisk-githubdemo
    DATABASE=Movies
 
    az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE # --config-connstr (in preview; to be enabled later)
