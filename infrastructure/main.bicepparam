@@ -1,7 +1,7 @@
 using './main.bicep'
 
 param location = 'swedencentral'
-param logAnalyticsWorkspaceName = 'ondfisk-githubdemo-logs'
+param logAnalyticsWorkspaceId = '/subscriptions/2b554ca5-5009-4849-9b8b-730a9820de6a/resourceGroups/ondfisk/providers/Microsoft.OperationalInsights/workspaces/ondfisk'
 param appServicePlanName = 'ondfisk-githubdemo-plan'
 param webAppName = 'ondfisk-githubdemo-web'
 param sqlServerName = 'ondfisk-githubdemo-sql'

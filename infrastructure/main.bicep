@@ -1,5 +1,5 @@
 param location string = resourceGroup().location
-param logAnalyticsWorkspaceName string
+param logAnalyticsWorkspaceId string
 param appServicePlanName string
 param webAppName string
 param sqlServerName string
@@ -96,19 +96,13 @@ resource slotBasicPublishingCredentialsFtp 'Microsoft.Web/sites/slots/basicPubli
   }
 }
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
-  name: logAnalyticsWorkspaceName
-  location: location
-  properties: {}
-}
-
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: webAppName
   location: location
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspace.id
+    WorkspaceResourceId: logAnalyticsWorkspaceId
   }
 }
 
@@ -154,7 +148,7 @@ resource stagingApplicationInsights 'Microsoft.Insights/components@2020-02-02' =
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspace.id
+    WorkspaceResourceId: logAnalyticsWorkspaceId
   }
 }
 
