@@ -32,27 +32,8 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Add the _SPN_ to the group.
 1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
 1. Deploy the _infrastructure_ pipeline
-1. Connect web app to SQL database,
-
-   **Notes**:
-
-   - Commands must be run in _Azure Cloud Shell_ as the SQL Server firewall is configured to block requests from outside Azure.
-   - When running the commands, answer `n` to the question _"Do you want to set current user as Entra admin? (y/n)"_
-
-   ```bash
-   RESOURCE_GROUP=GitHubDemo
-   SQL_SERVER=ondfisk-githubdemo-sql
-   WEBAPP=ondfisk-githubdemo-web
-   DATABASE=Movies
-
-   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE # --config-connstr (in preview; to be enabled later)
-
-   SLOT=staging
-   SLOT_DATABASE=MoviesStaging
-
-   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $SLOT_DATABASE --system-identity --client-type dotnet --connection $SLOT_DATABASE # --config-connstr (in preview; not working for deployment slots yet)
-   ```
-
+1. Execute [`Grant-GraphPermissionToManagedIdentity.ps1`](./scripts/Grant-GraphPermissionToManagedIdentity.ps1).
+1. Deploy the _application_ pipeline
 1. Before running the app locally; apply migrations on the local database:
 
    ```bash
