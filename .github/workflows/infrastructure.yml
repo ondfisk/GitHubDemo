@@ -77,7 +77,6 @@ jobs:
       - name: Create Resource Group
         uses: azure/cli@v2.1.0
         with:
-          azcliversion: 2.63.0
           inlineScript: |
             az group create --name ${{ vars.RESOURCE_GROUP }} --location ${{ vars.LOCATION }}
 
@@ -127,7 +126,6 @@ jobs:
       - name: Create Resource Group
         uses: azure/cli@v2.1.0
         with:
-          azcliversion: 2.63.0
           inlineScript: |
             az group create --name ${{ vars.RESOURCE_GROUP }} --location ${{ vars.LOCATION }}
 

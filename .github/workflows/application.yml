@@ -106,7 +106,6 @@ jobs:
       - name: Get Connection String
         uses: azure/cli@v2.1.0
         with:
-          azcliversion: 2.63.0
           inlineScript: |
             CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
             echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
@@ -120,7 +119,6 @@ jobs:
       - name: Deploy Web App
         uses: azure/cli@v2.1.0
         with:
-          azcliversion: 2.63.0
           inlineScript: |
             az webapp deploy --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --src-path app.zip --clean
 
@@ -154,7 +152,6 @@ jobs:
       - name: Get Connection String
         uses: azure/cli@v2.1.0
         with:
-          azcliversion: 2.63.0
           inlineScript: |
             CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
             echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
@@ -168,6 +165,5 @@ jobs:
       - name: Swap Staging With Production
         uses: azure/cli@v2.1.0
         with:
-          azcliversion: 2.63.0
           inlineScript: |
             az webapp deployment slot swap --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }}
