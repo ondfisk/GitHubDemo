@@ -13,7 +13,7 @@ if (!builder.Environment.IsDevelopment())
 }
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddHealthChecks();
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("AppDbContext")));
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration["AZURE_SQL_CONNECTIONSTRING"]));
 builder.Services.AddScoped<IMovieService, MovieService>();
 
 var app = builder.Build();
