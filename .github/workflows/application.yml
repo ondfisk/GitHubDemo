@@ -16,9 +16,10 @@ on:
       - .github/workflows/application.yml
       - src/**
       - tests/**
-  workflow_dispatch: {}
+  workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   build:

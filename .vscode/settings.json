@@ -1,9 +1,7 @@
 {
   "cSpell.enabled": true,
   "cSpell.language": "en",
-  "cSpell.enableFiletypes": [
-    "*"
-  ],
+  "cSpell.enableFiletypes": ["*"],
   "cSpell.words": [
     "Antiforgery",
     "appsettings",
