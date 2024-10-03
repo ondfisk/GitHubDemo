@@ -2,7 +2,7 @@ using './main.bicep'
 
 param location = 'swedencentral'
 param logAnalyticsWorkspaceId = '/subscriptions/2b554ca5-5009-4849-9b8b-730a9820de6a/resourceGroups/ondfisk/providers/Microsoft.OperationalInsights/workspaces/ondfisk'
-param appServicePlanName = 'ondfisk-githubdemo-plan'
+param appServicePlanId = '/subscriptions/bd0c76c9-58a6-4c33-bda2-5dc48915446e/resourceGroups/Shared/providers/Microsoft.Web/serverFarms/AppServicePlan'
 param webAppName = 'ondfisk-githubdemo-web'
 param sqlServerName = 'ondfisk-githubdemo-sql'
 param databaseName = 'Movies'

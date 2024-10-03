@@ -32,27 +32,19 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Add the _SPN_ to the group.
 1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
 1. Deploy the _infrastructure_ pipeline
-1. Connect web app to SQL database,
+1. Execute scripts:
 
-   **Notes**:
+   ```powershell
+   .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId "b461d90e-0c15-44ec-adc2-51d14f9f5731" -IdentityName "ondfisk-githubdemo-sql" -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
 
-   - Commands must be run in _Azure Cloud Shell_ as the SQL Server firewall is configured to block requests from outside Azure.
-   - When running the commands, answer `n` to the question _"Do you want to set current user as Entra admin? (y/n)"_
+   # Answer no to: Do you want to set current user as Entra admin?
 
-   ```bash
-   RESOURCE_GROUP=GitHubDemo
-   SQL_SERVER=ondfisk-githubdemo-sql
-   WEBAPP=ondfisk-githubdemo-web
-   DATABASE=Movies
+   .\scripts\New-AzureWebSitesSqlConnection.ps1 -ResourceGroupName "GitHubDemo" -WebAppName "ondfisk-githubdemo-web" -DeploymentSlotName "staging" -SqlServerName "ondfisk-githubdemo-sql" -DatabaseName "MoviesStaging"
 
-   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE # --config-connstr (in preview; to be enabled later)
-
-   SLOT=staging
-   SLOT_DATABASE=MoviesStaging
-
-   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $SLOT_DATABASE --system-identity --client-type dotnet --connection $SLOT_DATABASE # --config-connstr (in preview; not working for deployment slots yet)
+   .\scripts\New-AzureWebSitesSqlConnection.ps1 -ResourceGroupName "GitHubDemo" -WebAppName "ondfisk-githubdemo-web" -SqlServerName "ondfisk-githubdemo-sql" -DatabaseName "Movies"
    ```
 
+1. Deploy the _application_ pipeline
 1. Before running the app locally; apply migrations on the local database:
 
    ```bash
@@ -61,10 +53,10 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
 ## Notes
 
-To lint codebase locally you can run [Super-Linter](https://github.com/super-linter/super-linter):
+To lint repository locally run:
 
 ```bash
-docker run -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -e DEFAULT_BRANCH=main -e VALIDATE_CSS=false -e VALIDATE_CSS_PRETTIER=false -e VALIDATE_JSCPD=false -e VALIDATE_JSON_PRETTIER=false -v .:/tmp/lint ghcr.io/super-linter/super-linter:latest
+docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_CSHARP=false -e VALIDATE_CSS=false -e VALIDATE_CSS_PRETTIER=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e VALIDATE_DOTNET_SLN_FORMAT_WHITESPACE=false -e VALIDATE_JSCPD=false -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
 ```
 
 You can find the Azure DevOps version [here](https://dev.azure.com/ondfisk/AzureDevOpsDemo).

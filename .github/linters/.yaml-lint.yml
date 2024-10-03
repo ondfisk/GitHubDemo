@@ -11,6 +11,7 @@ rules:
   commas:
     level: error
   comments:
+    min-spaces-from-content: 1
     level: error
   comments-indentation:
     level: error
@@ -40,7 +41,7 @@ rules:
     level: error
   octal-values: disable
   quoted-strings:
-    quote-type: single
+    quote-type: double
     required: only-when-needed
   trailing-spaces:
     level: error

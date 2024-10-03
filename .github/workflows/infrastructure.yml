@@ -1,7 +1,7 @@
 ---
 name: Infrastructure
 
-on:
+"on":
   push:
     branches:
       - main
@@ -14,9 +14,10 @@ on:
     paths:
       - .github/workflows/infrastructure.yml
       - infrastructure/**
-  workflow_dispatch: {}
+  workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -25,10 +26,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.0
 
       - name: Lint Bicep Files
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
@@ -36,7 +37,7 @@ jobs:
             az bicep lint --file infrastructure/main.bicepparam
 
       - name: Build Bicep Files
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
@@ -44,7 +45,7 @@ jobs:
             az bicep build-params --file infrastructure/main.bicepparam --outfile infrastructure/main.parameters.json
 
       - name: Upload Bicep Files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: infrastructure
           path: infrastructure/
@@ -61,20 +62,20 @@ jobs:
 
     steps:
       - name: Download Bicep Files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: infrastructure
           path: infrastructure/
 
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@v2.2.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
@@ -111,20 +112,20 @@ jobs:
 
     steps:
       - name: Download Bicep Files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: infrastructure
           path: infrastructure/
 
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@v2.2.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |

@@ -1,7 +1,7 @@
 ---
 name: Application
 
-on:
+"on":
   push:
     branches:
       - main
@@ -16,23 +16,24 @@ on:
       - .github/workflows/application.yml
       - src/**
       - tests/**
-  workflow_dispatch: {}
+  workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04 # Test containers fails on ubuntu-latest as of 2024-10-02
     env:
       configuration: Release
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v4.0.1
         with:
           dotnet-version: 9.0.100-preview.6.24328.19
 
@@ -52,7 +53,7 @@ jobs:
         run: pushd app && zip -r ../app.zip . && popd
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: app
           path: app.zip
@@ -64,7 +65,7 @@ jobs:
         run: dotnet ef migrations script --idempotent --project src/MyApp/ --startup-project src/MyApp/ --no-build --output migrate.sql
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: migrate.sql
           path: migrate.sql
@@ -84,30 +85,31 @@ jobs:
 
     steps:
       - name: Download App
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: app
           path: .
 
       - name: Download EF Migration Script
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: migrate.sql
           path: .
 
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@v2.2.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get Connection String
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
-            echo "CONNECTION_STRING=$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query [].value --output tsv)" >> "$GITHUB_ENV"
+            CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
+            echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
 
       - name: Apply EF migration script
         uses: Azure/sql-action@v2
@@ -116,7 +118,7 @@ jobs:
           path: migrate.sql
 
       - name: Deploy Web App
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
@@ -137,24 +139,25 @@ jobs:
 
     steps:
       - name: Download EF Migration Script
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: migrate.sql
           path: .
 
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@v2.2.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get Connection String
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
-            echo "CONNECTION_STRING=$(az webapp config connection-string list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query [].value --output tsv)" >> "$GITHUB_ENV"
+            CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
+            echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
 
       - name: Apply EF migration script
         uses: Azure/sql-action@v2
@@ -163,7 +166,7 @@ jobs:
           path: migrate.sql
 
       - name: Swap Staging With Production
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |

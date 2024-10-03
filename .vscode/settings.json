@@ -1,15 +1,14 @@
 {
   "cSpell.enabled": true,
   "cSpell.language": "en",
-  "cSpell.enableFiletypes": [
-    "*"
-  ],
+  "cSpell.enableFiletypes": ["*"],
   "cSpell.words": [
     "Antiforgery",
     "appsettings",
     "ASPNETCORE",
     "azcliversion",
     "bicepparam",
+    "CONNECTIONSTRING",
     "connectionstrings",
     "Darabont",
     "DOTNETCORE",
@@ -22,11 +21,13 @@
     "MSSQL",
     "ondfisk",
     "outfile",
+    "passwordless",
     "popd",
     "pushd",
     "pwsh",
     "resourcegroup",
     "serverfarms",
+    "serviceconnector",
     "Shawshank",
     "swedencentral",
     "Testcontainers",
