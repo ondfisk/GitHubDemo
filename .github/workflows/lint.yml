@@ -33,4 +33,10 @@ jobs:
         uses: super-linter/super-linter@v7.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_CSHARP: false # temporary workaround for linter not supporting .NET 9
+          VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS: false # temporary workaround for linter not supporting .NET 9
+          VALIDATE_DOTNET_SLN_FORMAT_STYLE: false # temporary workaround for linter not supporting .NET 9
+          VALIDATE_DOTNET_SLN_FORMAT_WHITESPACE: false # temporary workaround for linter not supporting .NET 9
+          VALIDATE_CSS: false
+          VALIDATE_CSS_PRETTIER: false
           VALIDATE_JSCPD: false

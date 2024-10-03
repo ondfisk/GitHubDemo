@@ -1,7 +1,7 @@
 ---
 name: Application
 
-on:
+"on":
   push:
     branches:
       - main
