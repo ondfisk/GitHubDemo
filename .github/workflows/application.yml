@@ -112,7 +112,7 @@ jobs:
             echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
 
       - name: Apply EF migration script
-        uses: Azure/sql-action@v2
+        uses: Azure/sql-action@v2.3
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
           path: migrate.sql
@@ -160,7 +160,7 @@ jobs:
             echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
 
       - name: Apply EF migration script
-        uses: Azure/sql-action@v2
+        uses: Azure/sql-action@v2.3
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
           path: migrate.sql
