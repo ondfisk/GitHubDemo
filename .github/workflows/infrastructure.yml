@@ -31,6 +31,7 @@ jobs:
       - name: Lint Bicep Files
         uses: azure/cli@v2.1.0
         with:
+          azcliversion: 2.63.0
           inlineScript: |
             az bicep lint --file infrastructure/main.bicep
             az bicep lint --file infrastructure/main.bicepparam
