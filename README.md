@@ -53,10 +53,10 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
 ## Notes
 
-To lint codebase locally you can run [Super-Linter](https://github.com/super-linter/super-linter):
+To lint repository locally run:
 
 ```bash
-docker run -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -e DEFAULT_BRANCH=main -e VALIDATE_CSS=false -e VALIDATE_CSS_PRETTIER=false -e VALIDATE_JSCPD=false -e VALIDATE_JSON_PRETTIER=false -v .:/tmp/lint ghcr.io/super-linter/super-linter:latest
+docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_JSCPD=false -e FIX_YAML_PRETTIER=true -e FIX_JSON_PRETTIER=true -e FIX_MARKDOWN_PRETTIER=true -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
 ```
 
 You can find the Azure DevOps version [here](https://dev.azure.com/ondfisk/AzureDevOpsDemo).
