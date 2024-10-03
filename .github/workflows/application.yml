@@ -102,15 +102,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Configure database connection
-        uses: azure/cli@v2
-        with:
-          azcliversion: 2.63.0
-          inlineScript: |
-            az extension add --upgrade --name serviceconnector-passwordless
-
-            az webapp connection create sql --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.RESOURCE_GROUP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --target-resource-group ${{ vars.RESOURCE_GROUP }} --server ${{ vars.SQL_SERVER }} --database ${{ vars.DATABASE }} --system-identity --client-type dotnet --connection ${{ vars.DATABASE }}
-
       - name: Get Connection String
         uses: azure/cli@v2
         with:
@@ -158,15 +149,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Configure database connection
-        uses: azure/cli@v2
-        with:
-          azcliversion: 2.63.0
-          inlineScript: |
-            az extension add --upgrade --name serviceconnector-passwordless
-
-            az webapp connection create sql --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.RESOURCE_GROUP }} --target-resource-group ${{ vars.RESOURCE_GROUP }} --server ${{ vars.SQL_SERVER }} --database ${{ vars.DATABASE }} --system-identity --client-type dotnet --connection ${{ vars.DATABASE }}
 
       - name: Get Connection String
         uses: azure/cli@v2

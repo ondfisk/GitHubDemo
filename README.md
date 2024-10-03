@@ -32,7 +32,18 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Add the _SPN_ to the group.
 1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
 1. Deploy the _infrastructure_ pipeline
-1. Execute [`Grant-GraphPermissionToManagedIdentity.ps1`](./scripts/Grant-GraphPermissionToManagedIdentity.ps1).
+1. Execute scripts:
+
+   ```powershell
+   .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId "b461d90e-0c15-44ec-adc2-51d14f9f5731" -IdentityName "ondfisk-githubdemo-sql" -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
+
+   # Answer no to: Do you want to set current user as Entra admin?
+
+   .\scripts\New-AzureWebSitesSqlConnection.ps1 -ResourceGroupName "GitHubDemo" -WebAppName "ondfisk-githubdemo-web" -DeploymentSlotName "staging" -SqlServerName "ondfisk-githubdemo-sql" -DatabaseName "MoviesStaging"
+
+   .\scripts\New-AzureWebSitesSqlConnection.ps1 -ResourceGroupName "GitHubDemo" -WebAppName "ondfisk-githubdemo-web" -SqlServerName "ondfisk-githubdemo-sql" -DatabaseName "Movies"
+   ```
+
 1. Deploy the _application_ pipeline
 1. Before running the app locally; apply migrations on the local database:
 

@@ -1,16 +1,18 @@
 param (
     [string]
-    $TenantId = "b461d90e-0c15-44ec-adc2-51d14f9f5731",
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    $TenantId,
 
     [string]
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
     $IdentityName = "ondfisk-githubdemo-sql",
 
     [string[]]
-    $Permissions = @(
-        "User.Read.All",
-        "GroupMember.Read.All",
-        "Application.Read.All"
-    )
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    $Permissions
 )
 
 Import-Module Microsoft.Graph.Authentication
