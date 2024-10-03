@@ -53,7 +53,7 @@ jobs:
         run: pushd app && zip -r ../app.zip . && popd
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: app
           path: app.zip
@@ -65,7 +65,7 @@ jobs:
         run: dotnet ef migrations script --idempotent --project src/MyApp/ --startup-project src/MyApp/ --no-build --output migrate.sql
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: migrate.sql
           path: migrate.sql
@@ -85,26 +85,26 @@ jobs:
 
     steps:
       - name: Download App
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: app
           path: .
 
       - name: Download EF Migration Script
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: migrate.sql
           path: .
 
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@v2.2.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get Connection String
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
@@ -118,7 +118,7 @@ jobs:
           path: migrate.sql
 
       - name: Deploy Web App
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
@@ -139,20 +139,20 @@ jobs:
 
     steps:
       - name: Download EF Migration Script
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: migrate.sql
           path: .
 
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@v2.2.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get Connection String
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
@@ -166,7 +166,7 @@ jobs:
           path: migrate.sql
 
       - name: Swap Staging With Production
-        uses: azure/cli@v2
+        uses: azure/cli@v2.1.0
         with:
           azcliversion: 2.63.0
           inlineScript: |
