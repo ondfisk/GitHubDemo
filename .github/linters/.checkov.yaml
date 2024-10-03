@@ -21,3 +21,6 @@ skip-check:
   - CKV_AZURE_222 # Ensure that Azure Web App public network access is disabled
   - CKV_AZURE_225 # Ensure the App Service Plan is zone redundant
   - CKV_AZURE_229 # Ensure the Azure SQL Database Namespace is zone redundant
+skip-path:
+  - bin
+  - obj

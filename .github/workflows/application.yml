@@ -108,7 +108,7 @@ jobs:
         with:
           azcliversion: 2.63.0
           inlineScript: |
-            CONNECTION_STRING=$(az webapp config appsettings list --name ${{ vars.RESOURCE_GROUP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --resource-group ${{ vars.RESOURCE_GROUP }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
+            CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
             echo "${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
 
       - name: Apply EF migration script
@@ -156,7 +156,7 @@ jobs:
         with:
           azcliversion: 2.63.0
           inlineScript: |
-            CONNECTION_STRING=$(az webapp config appsettings list --name ${{ vars.RESOURCE_GROUP }} --resource-group ${{ vars.RESOURCE_GROUP }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
+            CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
             echo "${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
 
       - name: Apply EF migration script
