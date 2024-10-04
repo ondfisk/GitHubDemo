@@ -10,6 +10,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 - Continuous Quality using unit tests and _GitHub Actions_
 - Database migration using _Entity Framework_ and _GitHub Actions_
 - Blue/green deployments to _App Services_ using _Deployment Slots_
+- Local development environments using _Dev Containers_
 
 ## Prerequisites
 
@@ -48,7 +49,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Before running the app locally; apply migrations on the local database:
 
    ```bash
-   dotnet ef database update
+   dotnet ef database update --project src/MyApp/
    ```
 
 ## Notes

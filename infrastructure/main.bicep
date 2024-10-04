@@ -15,7 +15,7 @@ var stagingDatabaseName = '${databaseName}Staging'
 resource webApp 'Microsoft.Web/sites@2023-12-01' = {
   name: webAppName
   location: location
-  kind: 'app,linux'
+  kind: 'app,linux,container'
   identity: {
     type: 'SystemAssigned'
   }
@@ -24,15 +24,15 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
     reserved: true
     hyperV: false
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|9.0'
+      acrUseManagedIdentityCreds: true
       alwaysOn: true
-      http20Enabled: true
-      minTlsVersion: '1.2'
-      scmMinTlsVersion: '1.2'
+      detailedErrorLoggingEnabled: true
       ftpsState: 'Disabled'
       healthCheckPath: '/healthz'
+      http20Enabled: true
       httpLoggingEnabled: true
-      detailedErrorLoggingEnabled: true
+      minTlsVersion: '1.2'
+      scmMinTlsVersion: '1.2'
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'
@@ -43,7 +43,7 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
   name: deploymentSlotName
   parent: webApp
   location: location
-  kind: 'app,linux'
+  kind: 'app,linux,container'
   identity: {
     type: 'SystemAssigned'
   }
@@ -52,15 +52,15 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
     reserved: true
     hyperV: false
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|9.0'
+      acrUseManagedIdentityCreds: true
       alwaysOn: true
-      http20Enabled: true
-      minTlsVersion: '1.2'
-      scmMinTlsVersion: '1.2'
+      detailedErrorLoggingEnabled: true
       ftpsState: 'Disabled'
       healthCheckPath: '/healthz'
+      http20Enabled: true
       httpLoggingEnabled: true
-      detailedErrorLoggingEnabled: true
+      minTlsVersion: '1.2'
+      scmMinTlsVersion: '1.2'
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'

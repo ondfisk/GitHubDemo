@@ -7,13 +7,19 @@ using MyApp.Features.Shared;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-if (!builder.Environment.IsDevelopment())
-{
-    builder.Services.AddOpenTelemetry().UseAzureMonitor();
-}
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddHealthChecks();
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration["AZURE_SQL_CONNECTIONSTRING"]));
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+}
+else
+{
+    builder.Services.AddOpenTelemetry().UseAzureMonitor();
+    builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING")));
+}
+
 builder.Services.AddScoped<IMovieService, MovieService>();
 
 var app = builder.Build();
