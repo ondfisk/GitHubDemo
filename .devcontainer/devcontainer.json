@@ -1,0 +1,62 @@
+{
+	"name": "C# 9 and MS SQL",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:latest": {
+			"installBicep": true
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/devcontainers/features/dotnet:2": {
+			"version": "lts"
+		},
+		"ghcr.io/devcontainers/features/powershell:1": {},
+		"ghcr.io/jlaundry/devcontainer-features/mssql-odbc-driver:latest": {
+			"version": "18"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"mssql.connections": [
+					{
+						"server": "localhost,1433",
+						"database": "",
+						"authenticationType": "SqlLogin",
+						"user": "sa",
+						"password": "<YourStrong@Passw0rd>",
+						"emptyPasswordInput": false,
+						"savePassword": false,
+						"profileName": "mssql-container"
+					}
+				]
+			},
+			"extensions": [
+				"davidanson.vscode-markdownlint",
+				"github.copilot",
+				"github.copilot-chat",
+				"github.vscode-github-actions",
+				"github.vscode-pull-request-github",
+				"ms-azuretools.vscode-azureappservice",
+				"ms-azuretools.vscode-bicep",
+				"ms-azuretools.vscode-docker",
+				"ms-dotnettools.csharp",
+				"ms-dotnettools.vscodeintellicode-csharp",
+				"ms-mssql.mssql",
+				"ms-vscode.azure-account",
+				"redhat.vscode-yaml",
+				"streetsidesoftware.code-spell-checker"
+			]
+		}
+	},
+	"forwardPorts": [
+		5000,
+		5001
+	],
+	"portsAttributes": {
+		"5001": {
+			"protocol": "https"
+		}
+	}
+}
