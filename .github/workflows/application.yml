@@ -25,6 +25,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-20.04 # Test containers fails on ubuntu-latest as of 2024-10-02
+    permissions:
+      checks: write
+      pull-requests: write
     env:
       configuration: Release
 
@@ -44,7 +47,14 @@ jobs:
         run: dotnet build --no-restore --configuration ${{ env.configuration }}
 
       - name: .NET Test
-        run: dotnet test --no-build --configuration ${{ env.configuration }}
+        run: dotnet test --no-build --configuration ${{ env.configuration }} --logger:"console;verbosity=normal;xunit;LogFilePath=TestResult.xml"
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.1
+        if: always()
+        with:
+          files: |
+            TestResult.xml
 
       - name: .NET Publish
         run: dotnet publish src/MyApp/MyApp.csproj --no-build --configuration ${{ env.configuration }} --output app
