@@ -29,7 +29,7 @@ jobs:
       checks: write
       pull-requests: write
     env:
-      configuration: Release
+      CONFIGURATION: Release
 
     steps:
       - name: Checkout
@@ -44,10 +44,10 @@ jobs:
         run: dotnet restore
 
       - name: .NET Build
-        run: dotnet build --no-restore --configuration ${{ env.configuration }}
+        run: dotnet build --no-restore --configuration ${{ env.CONFIGURATION }}
 
       - name: .NET Test
-        run: dotnet test --no-build --configuration ${{ env.configuration }} --logger:"xunit;LogFilePath=TestResult.xml"
+        run: dotnet test --no-build --configuration ${{ env.CONFIGURATION }} --logger:"xunit;LogFilePath=TestResult.xml"
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2.17.1
@@ -56,8 +56,16 @@ jobs:
           files: |
             **/TestResult.xml
 
-      - name: .NET Publish
-        run: dotnet publish src/MyApp/MyApp.csproj --no-build --configuration ${{ env.configuration }} --output app
+      - name: Build Container Image
+        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags="${{ github.sha }}"
+
+      - name: Push Image to Azure Container Registry
+        run: |
+          az acr login --name ${{ vars.CONTAINER_REGISTRY }}
+          docker tag ondfisk-githubdemo ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:1.0
+          docker tag ondfisk-githubdemo ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:latest
+          docker tag ondfisk-githubdemo ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ github.sha }}
+          docker push ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo
 
       - name: Install EF Tool
         run: |
@@ -67,7 +75,7 @@ jobs:
       - name: Generate EF Migration Script
         run: dotnet ef migrations script --idempotent --project src/MyApp/ --startup-project src/MyApp/ --no-build --output migrate.sql
 
-      - name: Upload Artifact
+      - name: Upload EF Migration Script
         uses: actions/upload-artifact@v4.4.0
         with:
           name: migrate.sql
@@ -94,7 +102,7 @@ jobs:
           path: .
 
       - name: Azure Login
-        uses: azure/login@v2.2.0
+        uses: azure/login@v2.1.1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -112,6 +120,11 @@ jobs:
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
           path: migrate.sql
+
+      - uses: azure/webapps-deploy@v3.0.2
+        with:
+          app-name: ${{ vars.WEBAPP }}
+          images: ${{ secrets.CONTAINER_REGISTRY }}.azurecr.io:${{ github.sha }}'
 
   production:
     name: Deploy to Production
@@ -134,7 +147,7 @@ jobs:
           path: .
 
       - name: Azure Login
-        uses: azure/login@v2.2.0
+        uses: azure/login@v2.1.1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
