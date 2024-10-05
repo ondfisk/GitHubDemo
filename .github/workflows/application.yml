@@ -47,14 +47,14 @@ jobs:
         run: dotnet build --no-restore --configuration ${{ env.configuration }}
 
       - name: .NET Test
-        run: dotnet test --no-build --configuration ${{ env.configuration }} --logger:"console;verbosity=normal;xunit;LogFilePath=TestResult.xml"
+        run: dotnet test --no-build --configuration ${{ env.configuration }} --logger:"xunit;LogFilePath=TestResult.xml"
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2.17.1
         if: always()
         with:
           files: |
-            TestResult.xml
+            **/TestResult.xml
 
       - name: .NET Publish
         run: dotnet publish src/MyApp/MyApp.csproj --no-build --configuration ${{ env.configuration }} --output app
