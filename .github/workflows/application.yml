@@ -25,14 +25,17 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-20.04 # Test containers fails on ubuntu-latest as of 2024-10-02
-    container:
-      image: mcr.microsoft.com/dotnet/sdk:9.0-bookworm-slim
     env:
       configuration: Release
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: 9.0.x
 
       - name: .NET Restore
         run: dotnet restore
@@ -46,18 +49,9 @@ jobs:
       - name: .NET Publish
         run: dotnet publish src/MyApp/MyApp.csproj --no-build --configuration ${{ env.configuration }} --output app
 
-      # - name: Zip Artifact
-      #   run: pushd app && zip -r ../app.zip . && popd
-
-      # - name: Upload Artifact
-      #   uses: actions/upload-artifact@v4.4.0
-      #   with:
-      #     name: app
-      #     path: app.zip
-
       - name: Install EF Tool
         run: |
-          echo "/github/home/.dotnet/tools" >> $GITHUB_PATH
+          echo "/github/home/.dotnet/tools" >> "$GITHUB_PATH"
           dotnet tool install --global dotnet-ef --prerelease
 
       - name: Generate EF Migration Script
