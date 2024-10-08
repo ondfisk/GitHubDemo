@@ -62,7 +62,7 @@ jobs:
             **/TestResult.xml
 
       - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags='"${{ env.VERSION }};${{ github.sha }}"''
+        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags='"${{ env.VERSION }};${{ github.sha }}"'
 
       - name: Azure Login
         uses: azure/login@v2.2.0
