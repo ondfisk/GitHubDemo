@@ -29,6 +29,7 @@ jobs:
 
     env:
       CONFIGURATION: Release
+      VERSION: "1.0"
 
     permissions:
       checks: write
@@ -61,7 +62,7 @@ jobs:
             **/TestResult.xml
 
       - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags="${{ github.sha }}"
+        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags='"${{ env.VERSION }};${{ github.sha }}"''
 
       - name: Azure Login
         uses: azure/login@v2.2.0
@@ -73,10 +74,10 @@ jobs:
       - name: Push Image to Azure Container Registry
         run: |
           az acr login --name ${{ vars.CONTAINER_REGISTRY }}
-          docker tag ondfisk-githubdemo ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:1.0
-          docker tag ondfisk-githubdemo ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:latest
-          docker tag ondfisk-githubdemo ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ github.sha }}
-          docker push ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo
+          IMAGE="${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo"
+          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:1.0"
+          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ github.sha }}"
+          docker push $IMAGE
 
       - name: Install EF Tool
         run: |
@@ -113,7 +114,7 @@ jobs:
           path: .
 
       - name: Azure Login
-        uses: azure/login@v2.2.0
+        uses: azure/login@v2.1.1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -135,7 +136,7 @@ jobs:
       - uses: azure/webapps-deploy@v3.0.2
         with:
           app-name: ${{ vars.WEBAPP }}
-          images: ${{ secrets.CONTAINER_REGISTRY }}.azurecr.io:${{ github.sha }}'
+          images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io:${{ github.sha }}'
 
   production:
     name: Deploy to Production
@@ -158,7 +159,7 @@ jobs:
           path: .
 
       - name: Azure Login
-        uses: azure/login@v2.2.0
+        uses: azure/login@v2.1.1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -176,6 +177,14 @@ jobs:
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
           path: migrate.sql
+
+      - name: Tag Image with latest
+        run: |
+          az acr login --name ${{ vars.CONTAINER_REGISTRY }}
+          IMAGE="${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo"
+          docker pull "$IMAGE:${{ github.sha }}"
+          docker tag "$IMAGE:${{ github.sha }}" "$IMAGE:latest"
+          docker push "$IMAGE:latest"
 
       - name: Swap Staging With Production
         uses: azure/cli@v2.1.0
