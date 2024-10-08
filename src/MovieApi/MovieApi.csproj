@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableSdkContainerSupport>true</EnableSdkContainerSupport>
     <ContainerRepository>ondfisk-githubdemo</ContainerRepository>
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0-azurelinux3.0-distroless-composite</ContainerBaseImage>
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0-bookworm-slim</ContainerBaseImage>
     <UserSecretsId>daa757f0-b8d5-4679-8e0a-c60b6cb633eb</UserSecretsId>
   </PropertyGroup>
 
