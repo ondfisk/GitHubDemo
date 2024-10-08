@@ -85,7 +85,7 @@ jobs:
           dotnet tool install --global dotnet-ef --prerelease
 
       - name: Generate EF Migration Script
-        run: dotnet ef migrations script --idempotent --project src/MyApp/ --startup-project src/MyApp/ --no-build --output migrate.sql
+        run: dotnet ef migrations script --idempotent --project src/MovieApi/ --startup-project src/MovieApi/ --no-build --output migrate.sql
 
       - name: Upload EF Migration Script
         uses: actions/upload-artifact@v4.4.0

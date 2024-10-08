@@ -1,5 +1,5 @@
 ---
-name: Infrastructure #tag
+name: Infrastructure
 
 "on":
   push:
