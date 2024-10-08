@@ -137,7 +137,7 @@ jobs:
         with:
           app-name: ${{ vars.WEBAPP }}
           slot-name: ${{ vars.DEPLOYMENT_SLOT }}
-          images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io:${{ github.sha }}
+          images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ github.sha }}
 
   production:
     name: Deploy to Production
