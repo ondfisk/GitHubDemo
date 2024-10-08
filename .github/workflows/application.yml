@@ -29,7 +29,6 @@ jobs:
 
     env:
       CONFIGURATION: Release
-      VERSION: "1.0"
 
     permissions:
       checks: write
@@ -62,7 +61,7 @@ jobs:
             **/TestResult.xml
 
       - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags='"${{ env.VERSION }};${{ github.sha }}"'
+        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags="${{ github.sha }}"
 
       - name: Azure Login
         uses: azure/login@v2.2.0
@@ -133,9 +132,11 @@ jobs:
           connection-string: ${{ env.CONNECTION_STRING }}
           path: migrate.sql
 
-      - uses: azure/webapps-deploy@v3.0.2
+      - name: Deploy Web App Container
+        uses: azure/webapps-deploy@v3.0.2
         with:
           app-name: ${{ vars.WEBAPP }}
+          slot-name: ${{ vars.DEPLOYMENT_SLOT }}
           images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io:${{ github.sha }}
 
   production:
@@ -147,6 +148,7 @@ jobs:
 
     env:
       CONNECTION_STRING:
+      VERSION: "1.0"
 
     permissions:
       id-token: write
@@ -184,7 +186,8 @@ jobs:
           IMAGE="${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo"
           docker pull "$IMAGE:${{ github.sha }}"
           docker tag "$IMAGE:${{ github.sha }}" "$IMAGE:latest"
-          docker push "$IMAGE:latest"
+          docker tag "$IMAGE:${{ github.sha }}" "$IMAGE:${{ env.VERSION }}"
+          docker push $IMAGE --all-tags
 
       - name: Swap Staging With Production
         uses: azure/cli@v2.1.0
