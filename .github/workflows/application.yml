@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.2.0
+        uses: actions/checkout@v4.2.1
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4.0.1
@@ -87,7 +87,7 @@ jobs:
         run: dotnet ef migrations script --idempotent --project src/MovieApi/ --startup-project src/MovieApi/ --no-build --output migrate.sql
 
       - name: Upload EF Migration Script
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.4.1
         with:
           name: migrate.sql
           path: migrate.sql
