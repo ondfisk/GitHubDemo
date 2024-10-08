@@ -67,21 +67,6 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
   }
 }
 
-resource webAppBasicPublishingCredentialsFtp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2023-12-01' = {
-  name: 'ftp'
-  parent: webApp
-  properties: {
-    allow: false
-  }
-}
-
-resource slotBasicPublishingCredentialsFtp 'Microsoft.Web/sites/slots/basicPublishingCredentialsPolicies@2023-12-01' = {
-  name: 'ftp'
-  parent: deploymentSlot
-  properties: {
-    allow: false
-  }
-}
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: webAppName
