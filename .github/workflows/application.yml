@@ -136,7 +136,7 @@ jobs:
       - uses: azure/webapps-deploy@v3.0.2
         with:
           app-name: ${{ vars.WEBAPP }}
-          images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io:${{ github.sha }}'
+          images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io:${{ github.sha }}
 
   production:
     name: Deploy to Production
