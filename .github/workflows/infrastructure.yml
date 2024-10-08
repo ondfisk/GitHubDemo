@@ -143,11 +143,13 @@ jobs:
         with:
           inlineScript: |
             WEBAPP_IDENTITY=$(az webapp show --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query identity.principalId --output tsv)
-            az role assignment create --role "AcrPull" --assignee-object-id $WEBAPP_IDENTITY --scope ${{ vars.CONTAINER_REGISTRY }} --assignee-principal-type ServicePrincipal
+            CONTAINER_REGISTRY=$(az acr show --name ${{ vars.CONTAINER_REGISTRY }} --query id --output tsv)
+            az role assignment create --assignee $WEBAPP_IDENTITY --scope $CONTAINER_REGISTRY --role "AcrPull"
 
       - name: Assign AcrPull to Web App
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
             WEBAPP_IDENTITY=$(az webapp show --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query identity.principalId --output tsv)
-            az role assignment create --role "AcrPull" --assignee-object-id $WEBAPP_IDENTITY --scope ${{ vars.CONTAINER_REGISTRY }} --assignee-principal-type ServicePrincipal
+            CONTAINER_REGISTRY=$(az acr show --name ${{ vars.CONTAINER_REGISTRY }} --query id --output tsv)
+            az role assignment create --assignee $WEBAPP_IDENTITY --scope $CONTAINER_REGISTRY --role "AcrPull"

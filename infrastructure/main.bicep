@@ -67,21 +67,6 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
   }
 }
 
-resource webAppBasicPublishingCredentialsFtp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2023-12-01' = {
-  name: 'ftp'
-  parent: webApp
-  properties: {
-    allow: false
-  }
-}
-
-resource slotBasicPublishingCredentialsFtp 'Microsoft.Web/sites/slots/basicPublishingCredentialsPolicies@2023-12-01' = {
-  name: 'ftp'
-  parent: deploymentSlot
-  properties: {
-    allow: false
-  }
-}
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: webAppName
@@ -101,7 +86,6 @@ resource appSettings 'Microsoft.Web/sites/config@2023-12-01' = {
     ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
     AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${databaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity'
     XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
-    WEBSITE_RUN_FROM_PACKAGE: '1'
   }
 }
 
@@ -136,7 +120,6 @@ resource stagingAppSettings 'Microsoft.Web/sites/slots/config@2023-12-01' = {
     ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
     AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${databaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity'
     XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
-    WEBSITE_RUN_FROM_PACKAGE: '1'
   }
 }
 

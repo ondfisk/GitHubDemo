@@ -46,18 +46,37 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    ```
 
 1. Deploy the _application_ pipeline
-1. Before running the app locally; apply migrations on the local database:
+1. Run the app locally:
 
    ```bash
-   dotnet ef database update --project src/MyApp/
+   # Set development connection string:
+   dotnet user-secrets set "ConnectionStrings:Default" "Data Source=localhost,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" --project src/MovieApi/
+
+   # Update database:
+   dotnet ef database update --project src/MovieApi/
+
+   # Run
+   dotnet run --project src/MovieApi/
+   ```
+
+1. Build and run the container locally:
+
+   ```bash
+   dotnet publish src/MovieApi/ --os linux --arch x64 /t:PublishContainer
+   ```
+
+1. Run container locally (currently no database support):
+
+   ```bash
+   docker run -it --rm -p 8080:8080 -e AZURE_SQL_CONNECTIONSTRING="Data Source=host.docker.internal,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" ondfisk-githubdemo
    ```
 
 ## Notes
 
-To lint repository locally run:
+To lint repository locally run (currently does not work within Dev Container):
 
 ```bash
-docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_CSHARP=false -e VALIDATE_CSS=false -e VALIDATE_CSS_PRETTIER=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e VALIDATE_DOTNET_SLN_FORMAT_WHITESPACE=false -e VALIDATE_JSCPD=false -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
+docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e FIX_JSON_PRETTIER=true -e FIX_YAML_PRETTIER=true -e VALIDATE_CSHARP=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e VALIDATE_DOTNET_SLN_FORMAT_WHITESPACE=false -e VALIDATE_JSCPD=false -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
 ```
 
 You can find the Azure DevOps version [here](https://dev.azure.com/ondfisk/AzureDevOpsDemo).

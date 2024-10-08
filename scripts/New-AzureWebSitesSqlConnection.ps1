@@ -23,8 +23,6 @@ param (
     $DatabaseName
 )
 
-az extension add --upgrade --name serviceconnector-passwordless
-
 if ($DeploymentSlotName) {
     az webapp connection create sql --resource-group $ResourceGroupName --name $WebAppName --slot $DeploymentSlotName --target-resource-group $SqlServerResourceGroupName --server $SqlServerName --database $DatabaseName --system-identity --client-type dotnet --connection $DatabaseName --new
 }
