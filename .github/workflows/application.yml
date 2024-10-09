@@ -24,8 +24,7 @@ permissions:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-20.04 # Test containers fails on ubuntu-latest as of 2024-10-02
-    environment: Build
+    runs-on: ubuntu-latest
 
     env:
       CONFIGURATION: Release

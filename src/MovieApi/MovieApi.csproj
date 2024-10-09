@@ -13,15 +13,15 @@
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.12.1" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-rc.1.24452.1" />
-    <PackageReference Include="Microsoft.EntityframeworkCore.Design" Version="9.0.0-rc.1.24451.1">
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-rc.2.24474.3" />
+    <PackageReference Include="Microsoft.EntityframeworkCore.Design" Version="9.0.0-rc.2.24474.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityframeworkCore.SqlServer" Version="9.0.0-rc.1.24451.1" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityframeworkCore.SqlServer" Version="9.0.0-rc.2.24474.1" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
     <PackageReference Include="System.Private.Uri" Version="4.3.2" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0-rc.1.24431.7" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
   </ItemGroup>
 
 </Project>
