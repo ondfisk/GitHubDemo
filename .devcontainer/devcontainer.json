@@ -39,11 +39,18 @@
       ]
     }
   },
-  "forwardPorts": [5000],
+  "forwardPorts": [
+    8000,
+    8001
+  ],
   "remoteEnv": {
+    "ASPNETCORE_HTTPS_PORTS": "8001",
+    "ASPNETCORE_URLS=": "https://+;http://+",
     "ASPNETCORE_Kestrel__Certificates__Default__Password": "<YourStrong@Passw0rd>",
     "ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/aspnetapp.pfx",
     "TESTCONTAINERS_HOST_OVERRIDE": "host.docker.internal"
   },
-  "mounts": ["source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind"]
+  "mounts": [
+    "source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind"
+  ]
 }
