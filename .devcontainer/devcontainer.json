@@ -39,5 +39,11 @@
       ]
     }
   },
-  "forwardPorts": [5000]
+  "forwardPorts": [5000],
+  "remoteEnv": {
+    "ASPNETCORE_Kestrel__Certificates__Default__Password": "<YourStrong@Passw0rd>",
+    "ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/aspnetapp.pfx",
+    "TESTCONTAINERS_HOST_OVERRIDE": "host.docker.internal"
+  },
+  "mounts": ["source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind"]
 }

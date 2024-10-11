@@ -14,6 +14,21 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
 ## Prerequisites
 
+1. Export developer certificate:
+
+   ```pwsh
+   New-Item -Path $env:USERPROFILE/.aspnet/https -ItemType Directory -Force
+   dotnet dev-certs https --trust
+   dotnet dev-certs https -ep "$env:USERPROFILE/.aspnet/https/aspnetapp.pfx" -p "<YourStrong@Passw0rd>"
+   ```
+
+1. Go to WSL and copy the certificate to `~/.aspnet`:
+
+   ```bash
+   mkdir -p ~/.aspnet/https/
+   cp /mnt/c/Users/<USERNAME>/.aspnet/https/aspnetapp.pfx ~/.aspnet/https/
+   ```
+
 1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_ cf. <https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect>.
 1. Create SQL admin group:
 
