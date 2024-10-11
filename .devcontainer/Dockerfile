@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/dotnet:1.3.3-9.0-bookworm-slim
+FROM mcr.microsoft.com/devcontainers/dotnet:9.0
 
 USER vscode
 
