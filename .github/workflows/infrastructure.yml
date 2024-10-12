@@ -31,16 +31,16 @@ jobs:
       - name: Lint Bicep Files
         uses: azure/cli@v2.1.0
         with:
-          azcliversion: 2.63.0
           inlineScript: |
+            tdnf install -y icu # Temporary fix for ICU missing in Azure Linux
             az bicep lint --file infrastructure/main.bicep
             az bicep lint --file infrastructure/main.bicepparam
 
       - name: Build Bicep Files
         uses: azure/cli@v2.1.0
         with:
-          azcliversion: 2.63.0
           inlineScript: |
+            tdnf install -y icu # Temporary fix for ICU missing in Azure Linux
             az bicep build --file infrastructure/main.bicep --outfile infrastructure/main.json
             az bicep build-params --file infrastructure/main.bicepparam --outfile infrastructure/main.parameters.json
 
