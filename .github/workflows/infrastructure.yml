@@ -32,6 +32,7 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
+            tdnf install -y icu
             az bicep lint --file infrastructure/main.bicep
             az bicep lint --file infrastructure/main.bicepparam
 
