@@ -39,7 +39,7 @@
       ]
     }
   },
-  "forwardPorts": [8000, 8001],
+  "forwardPorts": [1433, 8000, 8001],
   "remoteEnv": {
     "ASPNETCORE_ENVIRONMENT": "Development",
     "ASPNETCORE_HTTP_PORTS": "8000",
@@ -49,6 +49,6 @@
     "TESTCONTAINERS_HOST_OVERRIDE": "host.docker.internal"
   },
   "mounts": [
-    "source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind"
+    "source=~/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind"
   ]
 }

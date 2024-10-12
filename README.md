@@ -72,9 +72,21 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    dotnet run --project src/MovieApi/
    ```
 
+1. Build and run the container locally:
+
+   ```bash
+   dotnet publish src/MovieApi/ /t:PublishContainer -p ContainerImageTags=latest
+   ```
+
+1. Run container locally (from WSL):
+
+   ```bash
+   docker run -it --rm -p 8000:8000 -p 8001:8001 -e ASPNETCORE_HTTP_PORTS="8000" -e ASPNETCORE_HTTPS_PORTS=8001 -e AZURE_SQL_CONNECTIONSTRING="Data Source=host.docker.internal,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" -e ASPNETCORE_Kestrel__Certificates__Default__Password="<YourStrong@Passw0rd>" -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx -v ~/.aspnet/https:/https ondfisk-githubdemo
+   ```
+
 ## Notes
 
-To lint repository locally run (currently does not work within Dev Container):
+To lint repository locally run (from WSL):
 
 ```bash
 docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e FIX_JSON_PRETTIER=true -e FIX_YAML_PRETTIER=true -e VALIDATE_CSHARP=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e VALIDATE_DOTNET_SLN_FORMAT_WHITESPACE=false -e VALIDATE_JSCPD=false -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
