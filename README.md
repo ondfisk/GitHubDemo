@@ -72,18 +72,6 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    dotnet run --project src/MovieApi/
    ```
 
-1. Build and run the container locally:
-
-   ```bash
-   dotnet publish src/MovieApi/ --os linux --arch x64 /t:PublishContainer
-   ```
-
-1. Run container locally (currently no database support):
-
-   ```bash
-   docker run -it --rm -p 8080:8080 -e AZURE_SQL_CONNECTIONSTRING="Data Source=host.docker.internal,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" ondfisk-githubdemo
-   ```
-
 ## Notes
 
 To lint repository locally run (currently does not work within Dev Container):
