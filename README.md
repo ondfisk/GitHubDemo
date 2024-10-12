@@ -20,13 +20,9 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    New-Item -Path $env:USERPROFILE/.aspnet/https -ItemType Directory -Force
    dotnet dev-certs https --trust
    dotnet dev-certs https -ep "$env:USERPROFILE/.aspnet/https/aspnetapp.pfx" -p "<YourStrong@Passw0rd>"
-   ```
-
-1. Go to WSL and copy the certificate to `~/.aspnet`:
-
-   ```bash
-   mkdir -p ~/.aspnet/https/
-   cp /mnt/c/Users/<USERNAME>/.aspnet/https/aspnetapp.pfx ~/.aspnet/https/
+   $distro = (wsl -l -q | Select-Object -First 1) -Replace "`0", ""
+   $username = wsl --distribution $distro whoami
+   Copy-Item ~\.aspnet\https\ \\wsl.localhost\$distro\home\$username\.aspnet\https\ -Recurse
    ```
 
 1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_ cf. <https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect>.
@@ -52,12 +48,14 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
    ```powershell
    .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId "b461d90e-0c15-44ec-adc2-51d14f9f5731" -IdentityName "ondfisk-githubdemo-sql" -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
+   ```
 
-   # Answer no to: Do you want to set current user as Entra admin?
+   Do not set the current user as Entra admin:
 
-   .\scripts\New-AzureWebSitesSqlConnection.ps1 -ResourceGroupName "GitHubDemo" -WebAppName "ondfisk-githubdemo-web" -DeploymentSlotName "staging" -SqlServerName "ondfisk-githubdemo-sql" -DatabaseName "MoviesStaging"
+   ```bash
+   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --slot "staging" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "MoviesStaging" --system-identity --client-type dotnet --connection "MoviesStaging" --new
 
-   .\scripts\New-AzureWebSitesSqlConnection.ps1 -ResourceGroupName "GitHubDemo" -WebAppName "ondfisk-githubdemo-web" -SqlServerName "ondfisk-githubdemo-sql" -DatabaseName "Movies"
+   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "Movies" --system-identity --client-type dotnet --connection "Movies" --new
    ```
 
 1. Deploy the _application_ pipeline
