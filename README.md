@@ -81,7 +81,13 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Run container locally (from WSL):
 
    ```bash
-   docker run -it --rm -p 8000:8000 -p 8001:8001 -e ASPNETCORE_HTTP_PORTS="8000" -e ASPNETCORE_HTTPS_PORTS=8001 -e AZURE_SQL_CONNECTIONSTRING="Data Source=host.docker.internal,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" -e ASPNETCORE_Kestrel__Certificates__Default__Password="<YourStrong@Passw0rd>" -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx -v ~/.aspnet/https:/https ondfisk-githubdemo
+   docker run -it --rm -p 8000:8000 -p 8001:8001 \
+   -e ASPNETCORE_HTTP_PORTS=8000 \
+   -e ASPNETCORE_HTTPS_PORTS=8001 \
+   -e AZURE_SQL_CONNECTIONSTRING="Data Source=host.docker.internal,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" \
+   -e ASPNETCORE_Kestrel__Certificates__Default__Password="<YourStrong@Passw0rd>" \
+   -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx \
+   -v ~/.aspnet/https:/https ondfisk-githubdemo
    ```
 
 ## Notes
