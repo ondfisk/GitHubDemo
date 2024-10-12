@@ -4,18 +4,18 @@
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "features": {
-    "ghcr.io/devcontainers/features/azure-cli:latest": {
+    "ghcr.io/devcontainers/features/azure-cli": {
       "installBicep": true,
       "extensions": "serviceconnector-passwordless"
     },
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:latest": {},
-    "ghcr.io/devcontainers/features/dotnet:latest": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker": {},
+    "ghcr.io/devcontainers/features/dotnet": {
       "version": "lts"
     },
-    "ghcr.io/devcontainers/features/powershell:latest": {
+    "ghcr.io/devcontainers/features/powershell": {
       "modules": "Microsoft.Graph.Authentication,Microsoft.Graph.Applications"
     },
-    "ghcr.io/jlaundry/devcontainer-features/mssql-odbc-driver:latest": {}
+    "ghcr.io/jlaundry/devcontainer-features/mssql-odbc-driver": {}
   },
   "customizations": {
     "vscode": {
@@ -33,10 +33,22 @@
         "ms-dotnettools.csharp",
         "ms-dotnettools.vscodeintellicode-csharp",
         "ms-vscode.azure-account",
+        "ms-vscode.powershell",
         "redhat.vscode-yaml",
         "streetsidesoftware.code-spell-checker"
       ]
     }
   },
-  "forwardPorts": [5000]
+  "forwardPorts": [1433, 8000, 8001],
+  "remoteEnv": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "ASPNETCORE_HTTP_PORTS": "8000",
+    "ASPNETCORE_HTTPS_PORTS": "8001",
+    "ASPNETCORE_Kestrel__Certificates__Default__Password": "<YourStrong@Passw0rd>",
+    "ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/aspnetapp.pfx",
+    "TESTCONTAINERS_HOST_OVERRIDE": "host.docker.internal"
+  },
+  "mounts": [
+    "source=~/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind"
+  ]
 }

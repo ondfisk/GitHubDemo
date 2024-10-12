@@ -14,6 +14,17 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
 ## Prerequisites
 
+1. Export developer certificate:
+
+   ```pwsh
+   New-Item -Path $env:USERPROFILE/.aspnet/https -ItemType Directory -Force
+   dotnet dev-certs https --trust
+   dotnet dev-certs https -ep "$env:USERPROFILE/.aspnet/https/aspnetapp.pfx" -p "<YourStrong@Passw0rd>"
+   $distro = (wsl -l -q | Select-Object -First 1) -Replace "`0", ""
+   $username = wsl --distribution $distro whoami
+   Copy-Item ~\.aspnet\https\ \\wsl.localhost\$distro\home\$username\.aspnet\https\ -Recurse
+   ```
+
 1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_ cf. <https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect>.
 1. Create SQL admin group:
 
@@ -37,12 +48,14 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
    ```powershell
    .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId "b461d90e-0c15-44ec-adc2-51d14f9f5731" -IdentityName "ondfisk-githubdemo-sql" -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
+   ```
 
-   # Answer no to: Do you want to set current user as Entra admin?
+   Do not set the current user as Entra admin:
 
-   .\scripts\New-AzureWebSitesSqlConnection.ps1 -ResourceGroupName "GitHubDemo" -WebAppName "ondfisk-githubdemo-web" -DeploymentSlotName "staging" -SqlServerName "ondfisk-githubdemo-sql" -DatabaseName "MoviesStaging"
+   ```bash
+   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --slot "staging" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "MoviesStaging" --system-identity --client-type dotnet --connection "MoviesStaging" --new
 
-   .\scripts\New-AzureWebSitesSqlConnection.ps1 -ResourceGroupName "GitHubDemo" -WebAppName "ondfisk-githubdemo-web" -SqlServerName "ondfisk-githubdemo-sql" -DatabaseName "Movies"
+   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "Movies" --system-identity --client-type dotnet --connection "Movies" --new
    ```
 
 1. Deploy the _application_ pipeline
@@ -59,21 +72,27 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    dotnet run --project src/MovieApi/
    ```
 
-1. Build and run the container locally:
+1. Build the container locally:
 
    ```bash
-   dotnet publish src/MovieApi/ --os linux --arch x64 /t:PublishContainer
+   dotnet publish src/MovieApi/ /t:PublishContainer -p ContainerImageTags=latest
    ```
 
-1. Run container locally (currently no database support):
+1. Run container locally (from WSL):
 
    ```bash
-   docker run -it --rm -p 8080:8080 -e AZURE_SQL_CONNECTIONSTRING="Data Source=host.docker.internal,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" ondfisk-githubdemo
+   docker run -it --rm -p 8000:8000 -p 8001:8001 \
+   -e ASPNETCORE_HTTP_PORTS=8000 \
+   -e ASPNETCORE_HTTPS_PORTS=8001 \
+   -e AZURE_SQL_CONNECTIONSTRING="Data Source=host.docker.internal,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" \
+   -e ASPNETCORE_Kestrel__Certificates__Default__Password="<YourStrong@Passw0rd>" \
+   -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx \
+   -v ~/.aspnet/https:/https ondfisk-githubdemo
    ```
 
 ## Notes
 
-To lint repository locally run (currently does not work within Dev Container):
+To lint repository locally run (from WSL):
 
 ```bash
 docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e FIX_JSON_PRETTIER=true -e FIX_YAML_PRETTIER=true -e VALIDATE_CSHARP=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e VALIDATE_DOTNET_SLN_FORMAT_WHITESPACE=false -e VALIDATE_JSCPD=false -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
