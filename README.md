@@ -72,7 +72,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    dotnet run --project src/MovieApi/
    ```
 
-1. Build and run the container locally:
+1. Build the container locally:
 
    ```bash
    dotnet publish src/MovieApi/ /t:PublishContainer -p ContainerImageTags=latest
