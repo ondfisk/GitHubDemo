@@ -2,7 +2,7 @@ namespace MovieApi.Tests.Models;
 
 public sealed class MovieDbContextTests : IAsyncLifetime
 {
-    private readonly MsSqlContainer _database = new MsSqlBuilder().Build();
+    private readonly MsSqlContainer _database = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:latest").Build();
 
     [Fact]
     public async Task After_migration_database_contains_people()
