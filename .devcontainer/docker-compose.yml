@@ -17,7 +17,7 @@ services:
     network_mode: service:db
 
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:latest
     restart: unless-stopped
     environment:
       MSSQL_SA_PASSWORD: <YourStrong@Passw0rd>
