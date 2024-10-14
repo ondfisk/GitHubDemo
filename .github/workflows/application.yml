@@ -86,7 +86,7 @@ jobs:
         run: dotnet ef migrations script --idempotent --project src/MovieApi/ --startup-project src/MovieApi/ --no-build --output migrate.sql
 
       - name: Upload EF Migration Script
-        uses: actions/upload-artifact@v4.4.1
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: migrate.sql
           path: migrate.sql
