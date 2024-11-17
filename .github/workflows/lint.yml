@@ -10,6 +10,8 @@ name: Lint
       - main
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build:
     name: Lint
