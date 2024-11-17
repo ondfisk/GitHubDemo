@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BC8272E9-6C86-4529-ABF5-ADE357F95895}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{597B0C74-47E0-4058-A130-31F966A48ED4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieApi", "src\MovieApi\MovieApi.csproj", "{113B8C8A-EB3A-44A6-A9E0-74CDCEA4B167}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieApi", "src\MovieApi\MovieApi.csproj", "{F0C0F4B9-056C-4693-8F6B-499A35F509F0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2C67BE85-4D03-4846-BAD6-1B12237DC24E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{38D7A021-4D84-45D6-87C8-FF75C3ABEEC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieApi.Tests", "tests\MovieApi.Tests\MovieApi.Tests.csproj", "{233E184E-373C-4010-AF96-F4E6010F837C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieApi.Tests", "tests\MovieApi.Tests\MovieApi.Tests.csproj", "{9B920ED7-9B16-42CF-AEA3-E705EB95E05F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,17 +20,17 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{113B8C8A-EB3A-44A6-A9E0-74CDCEA4B167}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{113B8C8A-EB3A-44A6-A9E0-74CDCEA4B167}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{113B8C8A-EB3A-44A6-A9E0-74CDCEA4B167}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{113B8C8A-EB3A-44A6-A9E0-74CDCEA4B167}.Release|Any CPU.Build.0 = Release|Any CPU
-		{233E184E-373C-4010-AF96-F4E6010F837C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{233E184E-373C-4010-AF96-F4E6010F837C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{233E184E-373C-4010-AF96-F4E6010F837C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{233E184E-373C-4010-AF96-F4E6010F837C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0C0F4B9-056C-4693-8F6B-499A35F509F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0C0F4B9-056C-4693-8F6B-499A35F509F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0C0F4B9-056C-4693-8F6B-499A35F509F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0C0F4B9-056C-4693-8F6B-499A35F509F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B920ED7-9B16-42CF-AEA3-E705EB95E05F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B920ED7-9B16-42CF-AEA3-E705EB95E05F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B920ED7-9B16-42CF-AEA3-E705EB95E05F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B920ED7-9B16-42CF-AEA3-E705EB95E05F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{113B8C8A-EB3A-44A6-A9E0-74CDCEA4B167} = {BC8272E9-6C86-4529-ABF5-ADE357F95895}
-		{233E184E-373C-4010-AF96-F4E6010F837C} = {2C67BE85-4D03-4846-BAD6-1B12237DC24E}
+		{F0C0F4B9-056C-4693-8F6B-499A35F509F0} = {597B0C74-47E0-4058-A130-31F966A48ED4}
+		{9B920ED7-9B16-42CF-AEA3-E705EB95E05F} = {38D7A021-4D84-45D6-87C8-FF75C3ABEEC3}
 	EndGlobalSection
 EndGlobal

@@ -1,26 +1,7 @@
 ---
 quiet: true
 skip-check:
-  - CKV_AZURE_13 # Ensure App Service Authentication is set on Azure App Service
-  - CKV_AZURE_17 # Ensure the web app has 'Client Certificates (Incoming client certificates)' set
-  - CKV_AZURE_23 # Ensure that 'Auditing' is set to 'On' for SQL servers
-  - CKV_AZURE_24 # Ensure that 'Auditing' Retention is 'greater than 90 days' for SQL servers
-  - CKV_AZURE_25 # Ensure that 'Threat Detection types' is set to 'All'
-  - CKV_AZURE_26 # Ensure that 'Send Alerts To' is enabled for MSSQL servers
-  - CKV_AZURE_27 # Ensure that 'Email service and co-administrators' is 'Enabled' for MSSQL servers
-  - CKV_AZURE_35 # Ensure default network access rule for Storage Accounts is set to deny
-  - CKV_AZURE_59 # Ensure that Storage Accounts disallow public access
-  - CKV_AZURE_63 # Ensure that App service enables HTTP logging
-  - CKV_AZURE_65 # Ensure that App service enables detailed error messages
-  - CKV_AZURE_66 # Ensure that App service enables failed request tracing
-  - CKV_AZURE_80 # Ensure that 'Net Framework' version is the latest, if used as a part of the web app
-  - CKV_AZURE_88 # Ensure that App Services use Azure Files
-  - CKV_AZURE_109 # Ensure that Key Vault allows firewall rules settings
-  - CKV_AZURE_113 # Ensure that SQL server disables public network access
-  - CKV_AZURE_212 # Ensure App Service has a minimum number of instances for failover
-  - CKV_AZURE_222 # Ensure that Azure Web App public network access is disabled
-  - CKV_AZURE_225 # Ensure the App Service Plan is zone redundant
-  - CKV_AZURE_229 # Ensure the Azure SQL Database Namespace is zone redundant
+  - CKV_AZURE* # Azure checks are skipped as we rely on Azure Policy instead
 skip-path:
   - bin
   - obj
