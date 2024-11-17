@@ -6,22 +6,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableSdkContainerSupport>true</EnableSdkContainerSupport>
     <ContainerRepository>ondfisk-githubdemo</ContainerRepository>
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0-bookworm-slim</ContainerBaseImage>
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0-azurelinux3.0-amd64</ContainerBaseImage>
     <UserSecretsId>daa757f0-b8d5-4679-8e0a-c60b6cb633eb</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.13.1" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-rc.2.24474.3" />
-    <PackageReference Include="Microsoft.EntityframeworkCore.Design" Version="9.0.0-rc.2.24474.1">
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityframeworkCore.Design" Version="9.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityframeworkCore.SqlServer" Version="9.0.0-rc.2.24474.1" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
-    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
+    <PackageReference Include="Microsoft.EntityframeworkCore.SqlServer" Version="9.0.0" />
   </ItemGroup>
 
 </Project>

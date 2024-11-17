@@ -95,7 +95,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 To lint repository locally run (from WSL):
 
 ```bash
-docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e FIX_JSON_PRETTIER=true -e FIX_YAML_PRETTIER=true -e VALIDATE_CSHARP=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e VALIDATE_DOTNET_SLN_FORMAT_WHITESPACE=false -e VALIDATE_JSCPD=false -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
+docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e FIX_DOTNET_SLN_FORMAT_ANALYZERS=true -e FIX_DOTNET_SLN_FORMAT_STYLE=true -e FIX_JSON_PRETTIER=true -e FIX_JSON=true -e FIX_YAML_PRETTIER=true -e VALIDATE_JSCPD=false -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
 ```
 
 You can find the Azure DevOps version [here](https://dev.azure.com/ondfisk/AzureDevOpsDemo).

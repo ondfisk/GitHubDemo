@@ -31,8 +31,8 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
       healthCheckPath: '/healthz'
       http20Enabled: true
       httpLoggingEnabled: true
-      minTlsVersion: '1.2'
-      scmMinTlsVersion: '1.2'
+      minTlsVersion: '1.3'
+      scmMinTlsVersion: '1.3'
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'
@@ -59,8 +59,8 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
       healthCheckPath: '/healthz'
       http20Enabled: true
       httpLoggingEnabled: true
-      minTlsVersion: '1.2'
-      scmMinTlsVersion: '1.2'
+      minTlsVersion: '1.3'
+      scmMinTlsVersion: '1.3'
     }
     httpsOnly: true
     publicNetworkAccess: 'Enabled'
@@ -137,7 +137,7 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
       principalType: 'Group'
       sid: sqlAdminGroupId
     }
-    minimalTlsVersion: '1.2'
+    minimalTlsVersion: '1.3'
   }
 
   resource azureServices 'firewallRules' = {
