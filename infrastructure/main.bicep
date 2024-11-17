@@ -12,7 +12,7 @@ param stagingDatabaseSku string = 'Basic'
 var deploymentSlotName = 'staging'
 var stagingDatabaseName = '${databaseName}Staging'
 
-resource webApp 'Microsoft.Web/sites@2023-12-01' = {
+resource webApp 'Microsoft.Web/sites@2024-04-01' = {
   name: webAppName
   location: location
   kind: 'app,linux,container'
@@ -21,52 +21,60 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
   }
   properties: {
     serverFarmId: appServicePlanId
-    reserved: true
-    hyperV: false
     siteConfig: {
       acrUseManagedIdentityCreds: true
-      alwaysOn: true
-      detailedErrorLoggingEnabled: true
-      ftpsState: 'Disabled'
       healthCheckPath: '/healthz'
-      http20Enabled: true
-      httpLoggingEnabled: true
-      minTlsVersion: '1.3'
-      scmMinTlsVersion: '1.3'
     }
-    httpsOnly: true
-    publicNetworkAccess: 'Enabled'
+  }
+
+  resource slotConfigNames 'config' = {
+    name: 'slotConfigNames'
+    properties: {
+      appSettingNames: [
+        'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        'AZURE_SQL_CONNECTIONSTRING'
+      ]
+      azureStorageConfigNames: []
+      connectionStringNames: []
+    }
+  }
+
+  resource appSettings 'config' = {
+    name: 'appsettings'
+    properties: {
+      APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
+      ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
+      AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${databaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity'
+      XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
+    }
+  }
+
+  resource deploymentSlot 'slots' = {
+    name: deploymentSlotName
+    location: location
+    kind: 'app,linux,container'
+    identity: {
+      type: 'SystemAssigned'
+    }
+    properties: {
+      serverFarmId: appServicePlanId
+      siteConfig: {
+        acrUseManagedIdentityCreds: true
+        healthCheckPath: '/healthz'
+      }
+    }
+
+    resource stagingAppSettings 'config' = {
+      name: 'appsettings'
+      properties: {
+        APPLICATIONINSIGHTS_CONNECTION_STRING: stagingApplicationInsights.properties.ConnectionString
+        ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
+        AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${stagingDatabaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity'
+        XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
+      }
+    }
   }
 }
-
-resource deploymentSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
-  name: deploymentSlotName
-  parent: webApp
-  location: location
-  kind: 'app,linux,container'
-  identity: {
-    type: 'SystemAssigned'
-  }
-  properties: {
-    serverFarmId: appServicePlanId
-    reserved: true
-    hyperV: false
-    siteConfig: {
-      acrUseManagedIdentityCreds: true
-      alwaysOn: true
-      detailedErrorLoggingEnabled: true
-      ftpsState: 'Disabled'
-      healthCheckPath: '/healthz'
-      http20Enabled: true
-      httpLoggingEnabled: true
-      minTlsVersion: '1.3'
-      scmMinTlsVersion: '1.3'
-    }
-    httpsOnly: true
-    publicNetworkAccess: 'Enabled'
-  }
-}
-
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: webAppName
@@ -78,31 +86,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource appSettings 'Microsoft.Web/sites/config@2023-12-01' = {
-  name: 'appsettings'
-  parent: webApp
-  properties: {
-    APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
-    ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-    AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${databaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity'
-    XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
-  }
-}
-
-resource slotConfigNames 'Microsoft.Web/sites/config@2023-12-01' = {
-  name: 'slotConfigNames'
-  parent: webApp
-  properties: {
-    appSettingNames: [
-      'APPLICATIONINSIGHTS_CONNECTION_STRING'
-      'AZURE_SQL_CONNECTIONSTRING'
-    ]
-    azureStorageConfigNames: []
-    connectionStringNames: []
-  }
-}
-
-resource stagingApplicationInsights 'Microsoft.Insights/components@2020-02-02'= {
+resource stagingApplicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${webAppName}-staging'
   location: location
   kind: 'web'
@@ -112,18 +96,7 @@ resource stagingApplicationInsights 'Microsoft.Insights/components@2020-02-02'= 
   }
 }
 
-resource stagingAppSettings 'Microsoft.Web/sites/slots/config@2023-12-01' = {
-  name: 'appsettings'
-  parent: deploymentSlot
-  properties: {
-    APPLICATIONINSIGHTS_CONNECTION_STRING: stagingApplicationInsights.properties.ConnectionString
-    ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-    AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${stagingDatabaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity'
-    XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
-  }
-}
-
-resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
+resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' = {
   name: sqlServerName
   location: location
   identity: {
@@ -137,7 +110,6 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
       principalType: 'Group'
       sid: sqlAdminGroupId
     }
-    minimalTlsVersion: '1.3'
   }
 
   resource azureServices 'firewallRules' = {
@@ -147,24 +119,22 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
       endIpAddress: '0.0.0.0'
     }
   }
-}
 
-resource database 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
-  parent: sqlServer
-  name: databaseName
-  location: location
-  sku: {
-    name: databaseSku
+  resource database 'databases' = {
+    name: databaseName
+    location: location
+    sku: {
+      name: databaseSku
+    }
+    properties: {}
   }
-  properties: {}
-}
 
-resource stagingDatabase 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
-  parent: sqlServer
-  name: stagingDatabaseName
-  location: location
-  sku: {
-    name: stagingDatabaseSku
+  resource stagingDatabase 'databases' = {
+    name: stagingDatabaseName
+    location: location
+    sku: {
+      name: stagingDatabaseSku
+    }
+    properties: {}
   }
-  properties: {}
 }

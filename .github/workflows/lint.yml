@@ -10,15 +10,13 @@ name: Lint
       - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   build:
     name: Lint
     runs-on: ubuntu-latest
 
     permissions:
+      contents: read
       statuses: write
 
     steps:
