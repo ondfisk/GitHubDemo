@@ -73,9 +73,9 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
         run: |
           az acr login --name ${{ vars.CONTAINER_REGISTRY }}
-          IMAGE="${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo"
-          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ github.sha }}"
-          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ env.IMAGE_TAG }}"
+          IMAGE="${{ vars.CONTAINER_REGISTRY }}.azurecr.io/githubdemo"
+          docker tag "githubdemo:${{ github.sha }}" "$IMAGE:${{ github.sha }}"
+          docker tag "githubdemo:${{ github.sha }}" "$IMAGE:${{ env.IMAGE_TAG }}"
           docker push $IMAGE --all-tags
         env:
           IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
@@ -139,7 +139,7 @@ jobs:
         with:
           app-name: ${{ vars.WEBAPP }}
           slot-name: ${{ vars.DEPLOYMENT_SLOT }}
-          images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ env.IMAGE_TAG }}
+          images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/githubdemo:${{ env.IMAGE_TAG }}
         env:
           IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
 

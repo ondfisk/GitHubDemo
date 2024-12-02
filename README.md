@@ -47,15 +47,15 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Execute scripts:
 
    ```powershell
-   .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId "b461d90e-0c15-44ec-adc2-51d14f9f5731" -IdentityName "ondfisk-githubdemo-sql" -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
+   .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId "b461d90e-0c15-44ec-adc2-51d14f9f5731" -IdentityName "githubdemo-sql" -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
    ```
 
    Do not set the current user as Entra admin:
 
    ```bash
-   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --slot "staging" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "MoviesStaging" --system-identity --client-type dotnet --connection "MoviesStaging" --new
+   az webapp connection create sql --resource-group "GitHubDemo" --name "githubdemo-web" --slot "staging" --target-resource-group "GitHubDemo" --server "githubdemo-sql" --database "MoviesStaging" --system-identity --client-type dotnet --connection "MoviesStaging" --new
 
-   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "Movies" --system-identity --client-type dotnet --connection "Movies" --new
+   az webapp connection create sql --resource-group "GitHubDemo" --name "githubdemo-web" --target-resource-group "GitHubDemo" --server "githubdemo-sql" --database "Movies" --system-identity --client-type dotnet --connection "Movies" --new
    ```
 
 1. Deploy the _application_ pipeline
@@ -87,7 +87,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    -e AZURE_SQL_CONNECTIONSTRING="Data Source=host.docker.internal,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" \
    -e ASPNETCORE_Kestrel__Certificates__Default__Password="<YourStrong@Passw0rd>" \
    -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx \
-   -v ~/.aspnet/https:/https ondfisk-githubdemo
+   -v ~/.aspnet/https:/https githubdemo
    ```
 
 ## Notes
