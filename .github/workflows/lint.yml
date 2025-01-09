@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Super-Linter
-        uses: super-linter/super-linter@v7.2.0
+        uses: super-linter/super-linter@v7.2.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS: false # temporary workaround for linter not supporting .NET 9
