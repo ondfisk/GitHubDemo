@@ -13,7 +13,7 @@ public sealed class MovieDbContextTests : IAsyncLifetime
 
         var people = await context.People.ToListAsync();
 
-        people.Count.Should().Be(8);
+        Assert.Equal(8, people.Count);
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public sealed class MovieDbContextTests : IAsyncLifetime
 
         var movies = await context.Movies.ToListAsync();
 
-        movies.Count.Should().Be(10);
+        Assert.Equal(10, movies.Count);
     }
 
     public Task InitializeAsync() => _database.StartAsync();

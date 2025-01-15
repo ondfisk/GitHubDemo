@@ -4,24 +4,25 @@
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "features": {
-    "ghcr.io/devcontainers/features/azure-cli:1.2.5": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {
       "installBicep": true,
       "extensions": "serviceconnector-passwordless"
     },
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1.6.0": {},
+    // "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     "ghcr.io/devcontainers/features/dotnet:2.2.0": {
       "version": "lts"
     },
     "ghcr.io/devcontainers/features/powershell:1.5.0": {
       "modules": "Microsoft.Graph.Authentication,Microsoft.Graph.Applications"
     },
-    "ghcr.io/jlaundry/devcontainer-features/mssql-odbc-driver:1.0.2": {}
+    "ghcr.io/jlaundry/devcontainer-features/mssql-odbc-driver:1": {}
   },
   "customizations": {
     "vscode": {
       "settings": {},
       "extensions": [
         "davidanson.vscode-markdownlint",
+        "esbenp.prettier-vscode",
         "github.copilot",
         "github.copilot-chat",
         "github.vscode-github-actions",
