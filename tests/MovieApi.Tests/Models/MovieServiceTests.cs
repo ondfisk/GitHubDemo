@@ -1,7 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-
-namespace MovieApi.Tests.Models;
+﻿namespace MovieApi.Tests.Models;
 
 public class MovieServiceTests : IAsyncLifetime
 {
@@ -15,7 +12,6 @@ public class MovieServiceTests : IAsyncLifetime
         var builder = new DbContextOptionsBuilder<MovieDbContext>().UseSqlite(_connection);
         _context = new MovieDbContext(builder.Options);
         _service = new MovieService(_context);
-
     }
 
     [Fact]
@@ -23,7 +19,7 @@ public class MovieServiceTests : IAsyncLifetime
     {
         var movies = await _service.ReadAll();
 
-        movies.Count().Should().Be(10);
+        Assert.Equal(10, movies.Count());
     }
 
     [Fact]
@@ -33,7 +29,7 @@ public class MovieServiceTests : IAsyncLifetime
 
         var pulpFiction = new MovieDTO(8, "Pulp Fiction", "Quentin Tarantino", 1994);
 
-        movies.Should().Contain(pulpFiction);
+        Assert.Contains(pulpFiction, movies);
     }
 
     public async Task InitializeAsync()
