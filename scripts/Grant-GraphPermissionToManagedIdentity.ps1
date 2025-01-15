@@ -7,7 +7,7 @@ param (
     [string]
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    $IdentityName = "ondfisk-githubdemo-sql",
+    $IdentityName,
 
     [string[]]
     [Parameter(Mandatory = $true)]
