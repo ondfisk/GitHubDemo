@@ -109,7 +109,7 @@ jobs:
 
     steps:
       - name: Download EF Migration Script
-        uses: actions/download-artifact@v4.1.8
+        uses: actions/download-artifact@v4.1.9
         with:
           name: migrate.sql
           path: .
@@ -158,7 +158,7 @@ jobs:
 
     steps:
       - name: Download EF Migration Script
-        uses: actions/download-artifact@v4.1.8
+        uses: actions/download-artifact@v4.1.9
         with:
           name: migrate.sql
           path: .
