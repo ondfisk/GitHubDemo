@@ -80,16 +80,14 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
 
-      - name: Install EF Tool
-        run: |
-          echo "/github/home/.dotnet/tools" >> "$GITHUB_PATH"
-          dotnet tool install --global dotnet-ef --prerelease
+      - name: Install Entity Framework Core tools
+        run: dotnet tool install dotnet-ef --global
 
-      - name: Generate EF Migration Script
+      - name: Generate database migrations script
         run: dotnet ef migrations script --idempotent --project src/MovieApi/ --startup-project src/MovieApi/ --no-build --output migrate.sql
 
-      - name: Upload EF Migration Script
-        uses: actions/upload-artifact@v4.6.1
+      - name: Upload database migrations script
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: migrate.sql
           path: migrate.sql
@@ -108,7 +106,7 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download EF Migration Script
+      - name: Download database migrations script
         uses: actions/download-artifact@v4.1.8
         with:
           name: migrate.sql
@@ -128,7 +126,7 @@ jobs:
             CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
             echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
 
-      - name: Apply EF migration script
+      - name: Apply database migrations
         uses: Azure/sql-action@v2.3
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
@@ -157,7 +155,7 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download EF Migration Script
+      - name: Download database migrations script
         uses: actions/download-artifact@v4.1.8
         with:
           name: migrate.sql
@@ -177,7 +175,7 @@ jobs:
             CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
             echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
 
-      - name: Apply EF migration script
+      - name: Apply database migrations
         uses: Azure/sql-action@v2.3
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
