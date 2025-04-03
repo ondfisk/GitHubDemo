@@ -25,7 +25,19 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    Copy-Item ~\.aspnet\https\ \\wsl.localhost\$distro\home\$username\.aspnet\https\ -Recurse
    ```
 
-1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_ cf. <https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect>.
+1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_ as described here: [Use the Azure Login action with OpenID Connect](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
+   - Use _Option 1: Microsoft Entra application_
+   - Assign the SPN _Owner_ permissions on your Azure Subscription
+1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following secrets:
+   - `AZURE_CLIENT_ID`
+   - `AZURE_SUBSCRIPTION_ID`
+   - `AZURE_TENANT_ID`
+1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following variables:
+   - `CONTAINER_REGISTRY`: Name of your container registry
+   - `DEPLOYMENT_SLOT`: `staging`
+   - `LOCATION`: e.g. `swedencentral`
+   - `RESOURCE_GROUP`: e.g. `GitHubDemo`
+   - `WEBAPP`: Name of your web app
 1. Create SQL admin group:
 
    ```bash
@@ -47,16 +59,26 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Execute scripts:
 
    ```powershell
-   .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId "b461d90e-0c15-44ec-adc2-51d14f9f5731" -IdentityName "ondfisk-githubdemo-sql" -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
-   ```
+   $tenantId = "..."
+   $sqlServerName = "..."
 
-   Do not set the current user as Entra admin:
+   .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId $tenantId -IdentityName $sqlServerName -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
+   ```
 
    ```bash
-   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --slot "staging" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "MoviesStaging" --system-identity --client-type dotnet --connection "MoviesStaging" --new
+   RESOURCE_GROUP="GitHubDemo"
+   WEBAPP="..."
+   SQL_SERVER="..."
+   SLOT="staging"
+   DATABASE="Movies"
+   STAGING_DATABASE="MoviesStaging"
 
-   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "Movies" --system-identity --client-type dotnet --connection "Movies" --new
+   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $STAGING_DATABASE --system-identity --client-type dotnet --connection $STAGING_DATABASE --new
+
+   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE --new
    ```
+
+   **Note**: Do not set the current user as Entra admin:
 
 1. Deploy the _application_ pipeline
 1. Run the app locally:
@@ -95,7 +117,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 To lint repository locally run (from WSL):
 
 ```bash
-docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e FIX_JSON_PRETTIER=true -e FIX_JSON=true -e FIX_YAML_PRETTIER=true -e VALIDATE_JSCPD=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
+docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_GIT_COMMITLINT=false -e VALIDATE_JSCPD=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e FIX_JSON_PRETTIER=true -e FIX_JSON=true -e FIX_YAML_PRETTIER=true -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
 ```
 
 You can find the Azure DevOps version [here](https://dev.azure.com/ondfisk/AzureDevOpsDemo).

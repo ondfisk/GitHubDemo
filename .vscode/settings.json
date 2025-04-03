@@ -7,5 +7,14 @@
   "files.trimTrailingWhitespace": true,
   "[github-actions-workflow]": {
     "editor.tabSize": 2
-  }
+  },
+  "cSpell.words": [
+    "azureappservice",
+    "azureresourcegroups",
+    "davidanson",
+    "dotnettools",
+    "Entra",
+    "esbenp",
+    "vscodeintellicode"
+  ]
 }
