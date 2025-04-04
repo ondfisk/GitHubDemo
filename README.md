@@ -14,7 +14,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
 ## Prerequisites
 
-1. Export developer certificate:
+1. Export developer certificate (from Windows):
 
    ```pwsh
    New-Item -Path $env:USERPROFILE/.aspnet/https -ItemType Directory -Force
@@ -68,19 +68,24 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Create SQL admin group:
 
    ```bash
-   GROUP="GitHub Demo Movie Database Admins"
-   GROUP_MAIL_NICKNAME=github-demo-movie-database-admins
-   az ad group create --display-name "$GROUP" --mail-nickname $GROUP_MAIL_NICKNAME
+   GROUP_DISPLAY_NAME="GitHub Demo Movie Database Admins"
+   GROUP_MAIL_NICKNAME="github-demo-movie-database-admins"
+   GROUP=$(az ad group create --display-name "$GROUP_DISPLAY_NAME" --mail-nickname "$GROUP_MAIL_NICKNAME" --query id --output tsv)
    ```
 
 1. Add yourself to the group:
 
    ```bash
    ME=$(az ad signed-in-user show --query id --output tsv)
-   az ad group member add --group "$GROUP" --member-id $ME
+   az ad group member add --group $GROUP --member-id $ME
    ```
 
-1. Add the _SPN_ to the group.
+1. Add the _SPN_ to the group:
+
+   ```bash
+   az ad group member add --group $GROUP --member-id $OBJECT_ID
+   ```
+
 1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
 1. Deploy the _infrastructure_ pipeline
 1. Execute scripts:

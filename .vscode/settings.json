@@ -10,17 +10,26 @@
   },
   "cSpell.words": [
     "appsettings",
+    "aspnet",
+    "aspnetapp",
+    "ASPNETCORE",
     "azureappservice",
     "azureresourcegroups",
+    "bicepparam",
     "CONNECTIONSTRING",
     "Creds",
     "davidanson",
+    "distro",
     "dotnettools",
     "Entra",
     "esbenp",
+    "githubdemo",
     "healthz",
     "octo",
+    "ondfisk",
+    "Passw",
     "serverfarms",
+    "USERPROFILE",
     "vscodeintellicode"
   ]
 }

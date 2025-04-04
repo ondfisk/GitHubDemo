@@ -1,6 +1,7 @@
 param location string = resourceGroup().location
 param logAnalyticsWorkspaceName string
 param appServicePlanName string
+param appServicePlanSku string = 'P0v3'
 param webAppName string
 param sqlServerName string
 param databaseName string
@@ -22,7 +23,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   location: location
   kind: 'linux'
   sku: {
-    name: 'P0v3'
+    name: appServicePlanSku
   }
   properties: {
     reserved: true
