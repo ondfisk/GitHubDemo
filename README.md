@@ -54,11 +54,13 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    ```
 
 1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following secrets:
+
    - `AZURE_CLIENT_ID`
    - `AZURE_SUBSCRIPTION_ID`
    - `AZURE_TENANT_ID`
 
 1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following variables:
+
    - `CONTAINER_REGISTRY`: Name of your container registry
    - `DEPLOYMENT_SLOT`: `staging`
    - `LOCATION`: e.g. `swedencentral`
@@ -149,7 +151,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 To lint repository locally run (from WSL):
 
 ```bash
-docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_GIT_COMMITLINT=false -e VALIDATE_JSCPD=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e FIX_JSON_PRETTIER=true -e FIX_JSON=true -e FIX_YAML_PRETTIER=true -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
+docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_GIT_COMMITLINT=false -e VALIDATE_JSCPD=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e FIX_JSON=true -e FIX_JSON_PRETTIER=true -e FIX_MARKDOWN=true -e FIX_MARKDOWN_PRETTIER=true -e FIX_YAML_PRETTIER=true -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
 ```
 
 You can find the Azure DevOps version [here](https://dev.azure.com/ondfisk/AzureDevOpsDemo).
