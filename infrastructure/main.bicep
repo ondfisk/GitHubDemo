@@ -1,6 +1,7 @@
 param location string = resourceGroup().location
-param logAnalyticsWorkspaceId string
-param appServicePlanId string
+param logAnalyticsWorkspaceName string
+param appServicePlanName string
+param appServicePlanSku string = 'P0v3'
 param webAppName string
 param sqlServerName string
 param databaseName string
@@ -12,6 +13,23 @@ param stagingDatabaseSku string = 'Basic'
 var deploymentSlotName = 'staging'
 var stagingDatabaseName = '${databaseName}Staging'
 
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: logAnalyticsWorkspaceName
+  location: location
+}
+
+resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
+  name: appServicePlanName
+  location: location
+  kind: 'linux'
+  sku: {
+    name: appServicePlanSku
+  }
+  properties: {
+    reserved: true
+  }
+}
+
 resource webApp 'Microsoft.Web/sites@2024-04-01' = {
   name: webAppName
   location: location
@@ -20,7 +38,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
     type: 'SystemAssigned'
   }
   properties: {
-    serverFarmId: appServicePlanId
+    serverFarmId: appServicePlan.id
     siteConfig: {
       acrUseManagedIdentityCreds: true
       healthCheckPath: '/healthz'
@@ -57,7 +75,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
       type: 'SystemAssigned'
     }
     properties: {
-      serverFarmId: appServicePlanId
+      serverFarmId: appServicePlan.id
       siteConfig: {
         acrUseManagedIdentityCreds: true
         healthCheckPath: '/healthz'
@@ -82,7 +100,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspaceId
+    WorkspaceResourceId: logAnalyticsWorkspace.id
   }
 }
 
@@ -92,7 +110,7 @@ resource stagingApplicationInsights 'Microsoft.Insights/components@2020-02-02' =
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspaceId
+    WorkspaceResourceId: logAnalyticsWorkspace.id
   }
 }
 

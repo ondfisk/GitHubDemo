@@ -14,7 +14,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
 ## Prerequisites
 
-1. Export developer certificate:
+1. Export developer certificate (from Windows):
 
    ```pwsh
    New-Item -Path $env:USERPROFILE/.aspnet/https -ItemType Directory -Force
@@ -25,38 +25,94 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    Copy-Item ~\.aspnet\https\ \\wsl.localhost\$distro\home\$username\.aspnet\https\ -Recurse
    ```
 
-1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_ cf. <https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect>.
+1. Login to Azure CLI (or use Azure Cloud Shell in the Azure Portal):
+
+   ```bash
+   TENANT="..."
+   SUBSCRIPTION="..."
+
+   az login --tenant $TENANT
+   az account set --subscription $SUBSCRIPTION
+   ```
+
+1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_:
+
+   ```bash
+   APP_DISPLAY_NAME="..."
+   GITHUB_ORGANIZATION="..."
+   REPOSITORY="..."
+
+   CLIENT_ID=$(az ad app create --display-name $APP_DISPLAY_NAME --query appId --output tsv)
+
+   OBJECT_ID=$(az ad sp create --id $CLIENT_ID --query id --output tsv)
+
+   az role assignment create --assignee $OBJECT_ID --role "Owner" --scope "/subscriptions/$SUBSCRIPTION"
+
+   az ad app federated-credential create --id $CLIENT_ID --parameters "{ \"name\": \"$GITHUB_ORGANIZATION-$REPOSITORY-Environment-Staging\", \"issuer\": \"https://token.actions.githubusercontent.com\", \"subject\": \"repo:$GITHUB_ORGANIZATION/$REPOSITORY:environment:Staging\", \"description\": \"Deploy to staging environment\", \"audiences\": [ \"api://AzureADTokenExchange\" ] }"
+
+   az ad app federated-credential create --id $CLIENT_ID --parameters "{ \"name\": \"$GITHUB_ORGANIZATION-$REPOSITORY-Environment-Production\", \"description\": \"Deploy to production environment\", \"issuer\": \"https://token.actions.githubusercontent.com\", \"subject\": \"repo:$GITHUB_ORGANIZATION/$REPOSITORY:environment:Production\", \"audiences\": [ \"api://AzureADTokenExchange\" ] }"
+   ```
+
+1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following secrets:
+
+   - `AZURE_CLIENT_ID`
+   - `AZURE_SUBSCRIPTION_ID`
+   - `AZURE_TENANT_ID`
+
+1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following variables:
+
+   - `CONTAINER_REGISTRY`: Name of your container registry
+   - `DEPLOYMENT_SLOT`: `staging`
+   - `LOCATION`: e.g. `swedencentral`
+   - `RESOURCE_GROUP`: e.g. `GitHubDemo`
+   - `WEBAPP`: Name of your web app
+
 1. Create SQL admin group:
 
    ```bash
-   GROUP="GitHub Demo Movie Database Admins"
-   GROUP_MAIL_NICKNAME=github-demo-movie-database-admins
-   az ad group create --display-name "$GROUP" --mail-nickname $GROUP_MAIL_NICKNAME
+   GROUP_DISPLAY_NAME="GitHub Demo Movie Database Admins"
+   GROUP_MAIL_NICKNAME="github-demo-movie-database-admins"
+   GROUP=$(az ad group create --display-name "$GROUP_DISPLAY_NAME" --mail-nickname "$GROUP_MAIL_NICKNAME" --query id --output tsv)
    ```
 
 1. Add yourself to the group:
 
    ```bash
    ME=$(az ad signed-in-user show --query id --output tsv)
-   az ad group member add --group "$GROUP" --member-id $ME
+   az ad group member add --group $GROUP --member-id $ME
    ```
 
-1. Add the _SPN_ to the group.
+1. Add the _SPN_ to the group:
+
+   ```bash
+   az ad group member add --group $GROUP --member-id $OBJECT_ID
+   ```
+
 1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
 1. Deploy the _infrastructure_ pipeline
 1. Execute scripts:
 
    ```powershell
-   .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId "b461d90e-0c15-44ec-adc2-51d14f9f5731" -IdentityName "ondfisk-githubdemo-sql" -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
-   ```
+   $tenantId = "..."
+   $sqlServerName = "..."
 
-   Do not set the current user as Entra admin:
+   .\scripts\Grant-GraphPermissionToManagedIdentity.ps1 -TenantId $tenantId -IdentityName $sqlServerName -Permissions @("User.Read.All", "GroupMember.Read.All", "Application.Read.All")
+   ```
 
    ```bash
-   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --slot "staging" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "MoviesStaging" --system-identity --client-type dotnet --connection "MoviesStaging" --new
+   RESOURCE_GROUP="GitHubDemo"
+   WEBAPP="..."
+   SQL_SERVER="..."
+   SLOT="staging"
+   DATABASE="Movies"
+   STAGING_DATABASE="MoviesStaging"
 
-   az webapp connection create sql --resource-group "GitHubDemo" --name "ondfisk-githubdemo-web" --target-resource-group "GitHubDemo" --server "ondfisk-githubdemo-sql" --database "Movies" --system-identity --client-type dotnet --connection "Movies" --new
+   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $STAGING_DATABASE --system-identity --client-type dotnet --connection $STAGING_DATABASE --new
+
+   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE --new
    ```
+
+   **Note**: Do not set the current user as Entra admin:
 
 1. Deploy the _application_ pipeline
 1. Run the app locally:
@@ -95,7 +151,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 To lint repository locally run (from WSL):
 
 ```bash
-docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e FIX_JSON_PRETTIER=true -e FIX_JSON=true -e FIX_YAML_PRETTIER=true -e VALIDATE_JSCPD=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
+docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_GIT_COMMITLINT=false -e VALIDATE_JSCPD=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e FIX_JSON=true -e FIX_JSON_PRETTIER=true -e FIX_MARKDOWN=true -e FIX_MARKDOWN_PRETTIER=true -e FIX_YAML_PRETTIER=true -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
 ```
 
 You can find the Azure DevOps version [here](https://dev.azure.com/ondfisk/AzureDevOpsDemo).
