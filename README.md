@@ -25,19 +25,46 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    Copy-Item ~\.aspnet\https\ \\wsl.localhost\$distro\home\$username\.aspnet\https\ -Recurse
    ```
 
-1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_ as described here: [Use the Azure Login action with OpenID Connect](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
-   - Use _Option 1: Microsoft Entra application_
-   - Assign the SPN _Owner_ permissions on your Azure Subscription
+1. Login to Azure CLI (or use Azure Cloud Shell in the Azure Portal):
+
+   ```bash
+   TENANT="..."
+   SUBSCRIPTION="..."
+
+   az login --tenant $TENANT
+   az account set --subscription $SUBSCRIPTION
+   ```
+
+1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_:
+
+   ```bash
+   APP_DISPLAY_NAME="..."
+   GITHUB_ORGANIZATION="..."
+   REPOSITORY="..."
+
+   CLIENT_ID=$(az ad app create --display-name $APP_DISPLAY_NAME --query appId --output tsv)
+
+   OBJECT_ID=$(az ad sp create --id $CLIENT_ID --query id --output tsv)
+
+   az role assignment create --assignee $OBJECT_ID --role "Owner" --scope "/subscriptions/$SUBSCRIPTION"
+
+   az ad app federated-credential create --id $CLIENT_ID --parameters "{ \"name\": \"$GITHUB_ORGANIZATION-$REPOSITORY-Environment-Staging\", \"issuer\": \"https://token.actions.githubusercontent.com\", \"subject\": \"repo:$GITHUB_ORGANIZATION/$REPOSITORY:environment:Staging\", \"description\": \"Deploy to staging environment\", \"audiences\": [ \"api://AzureADTokenExchange\" ] }"
+
+   az ad app federated-credential create --id $CLIENT_ID --parameters "{ \"name\": \"$GITHUB_ORGANIZATION-$REPOSITORY-Environment-Production\", \"description\": \"Deploy to production environment\", \"issuer\": \"https://token.actions.githubusercontent.com\", \"subject\": \"repo:$GITHUB_ORGANIZATION/$REPOSITORY:environment:Production\", \"audiences\": [ \"api://AzureADTokenExchange\" ] }"
+   ```
+
 1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following secrets:
    - `AZURE_CLIENT_ID`
    - `AZURE_SUBSCRIPTION_ID`
    - `AZURE_TENANT_ID`
+
 1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following variables:
    - `CONTAINER_REGISTRY`: Name of your container registry
    - `DEPLOYMENT_SLOT`: `staging`
    - `LOCATION`: e.g. `swedencentral`
    - `RESOURCE_GROUP`: e.g. `GitHubDemo`
    - `WEBAPP`: Name of your web app
+
 1. Create SQL admin group:
 
    ```bash

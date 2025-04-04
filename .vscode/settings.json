@@ -9,12 +9,18 @@
     "editor.tabSize": 2
   },
   "cSpell.words": [
+    "appsettings",
     "azureappservice",
     "azureresourcegroups",
+    "CONNECTIONSTRING",
+    "Creds",
     "davidanson",
     "dotnettools",
     "Entra",
     "esbenp",
+    "healthz",
+    "octo",
+    "serverfarms",
     "vscodeintellicode"
   ]
 }
