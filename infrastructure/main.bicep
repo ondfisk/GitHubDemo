@@ -9,7 +9,7 @@ param sqlAdminGroupId string
 var deploymentSlotName = 'staging'
 var databaseName = 'Movies'
 var stagingDatabaseName = '${databaseName}Staging'
-var suffix = substring(uniqueString('githubdemo', subscription().subscriptionId), 8)
+var suffix = substring(uniqueString('githubdemo', subscription().subscriptionId), 0, 8)
 var logAnalyticsWorkspaceName = 'logs-${suffix}'
 var appServicePlanName = 'plan-${suffix}'
 var webAppName = 'web-${suffix}'
