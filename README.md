@@ -1,6 +1,6 @@
 # GitHub Demo
 
-This project demonstrates a number of capabilities in GitHub and Microsoft Azure:
+This repository demonstrates a number of capabilities in GitHub and Microsoft Azure:
 
 - Continuous Planning using _GitHub Issues_
 - Continuous Integration using _GitHub Repositories_ and _GitHub Actions_
@@ -12,24 +12,25 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 - Blue/green deployments to _App Services_ using _Deployment Slots_
 - Local development environments using _Dev Containers_
 
-## Prerequisites
+## Run locally (in a _Dev Container_)
 
-1. Export developer certificate (from Windows):
+1. Create and export development certificate from Windows:
 
-   ```pwsh
-   New-Item -Path $env:USERPROFILE/.aspnet/https -ItemType Directory -Force
+   ```cmd
+   dotnet dev-certs https -ep %USERPROFILE%\.aspnet\https\aspnetapp.pfx --password "<YourStrong@Passw0rd>"
    dotnet dev-certs https --trust
-   dotnet dev-certs https -ep "$env:USERPROFILE/.aspnet/https/aspnetapp.pfx" -p "<YourStrong@Passw0rd>"
-   Copy-Item ~\.aspnet\https\ \\wsl.localhost\$distro\home\vscode\.aspnet\https\ -Recurse
    ```
 
-1. Import developer certificate (from dev container or WSL):
+1. Copy development certificate to WSL_
 
    ```bash
-   # TODO
+    cp /mnt/c/Users/[Windows-Username]/.aspnet/https/aspnetapp.pfx ~/.aspnet/https
    ```
 
-1. Run the app locally:
+1. Fork the repository.
+1. Clone repository to WSL and open in VS Code.
+1. Open in _Dev Container_.
+1. Configure database:
 
    ```bash
    # Set development connection string:
@@ -38,34 +39,56 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    # Update database:
    dotnet ef database update --project src/MovieApi/
 
+   # Restore
+   dotnet restore
+
+   # Build
+   dotnet build
+
+   # Test
+   dotnet test
+
    # Run
-   dotnet run --project src/MovieApi/
+   dotnet watch run --project src/MovieApi/
    ```
 
-1. Build the container locally:
+1. Browse to <https://localhost:8001/Movies> to inspect API:
 
-   ```bash
-   dotnet publish src/MovieApi/ /t:PublishContainer -p ContainerImageTags=latest
+   ```json
+   [
+      {
+         "id": 5,
+         "title": "12 Angry Men",
+         "director": "Sidney Lumet",
+         "year": 1957
+      },
+      {
+         "id": 8,
+         "title": "Pulp Fiction",
+         "director": "Quentin Tarantino",
+         "year": 1994
+      },
+      ...
+   ]
    ```
 
-1. Run container locally (from WSL):
+## Deploy to Azure
 
-   ```bash
-   docker run -it --rm -p 8000:8000 -p 8001:8001 \
-   -e ASPNETCORE_HTTP_PORTS=8000 \
-   -e ASPNETCORE_HTTPS_PORTS=8001 \
-   -e AZURE_SQL_CONNECTIONSTRING="Data Source=host.docker.internal,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" \
-   -e ASPNETCORE_Kestrel__Certificates__Default__Password="<YourStrong@Passw0rd>" \
-   -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx \
-   -v ~/.aspnet/https:/https ondfisk-githubdemo
-   ```
-
-1. Login to Azure CLI (or use Azure Cloud Shell in the Azure Portal):
+1. Declare input variables
 
    ```bash
    TENANT="..."
    SUBSCRIPTION="..."
+   GROUP_DISPLAY_NAME="GitHub Demo Movie Database Admins"
+   GROUP_MAIL_NICKNAME="github-demo-movie-database-admins"
+   APP_DISPLAY_NAME="..."
+   GITHUB_ORGANIZATION="..."
+   REPOSITORY="..."
+   ```
 
+1. Login:
+
+   ```bash
    az login --tenant $TENANT
    az account set --subscription $SUBSCRIPTION
    ```
@@ -73,12 +96,7 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_:
 
    ```bash
-   APP_DISPLAY_NAME="..."
-   GITHUB_ORGANIZATION="..."
-   REPOSITORY="..."
-
    CLIENT_ID=$(az ad app create --display-name $APP_DISPLAY_NAME --query appId --output tsv)
-
    OBJECT_ID=$(az ad sp create --id $CLIENT_ID --query id --output tsv)
 
    az role assignment create --assignee $OBJECT_ID --role "Owner" --scope "/subscriptions/$SUBSCRIPTION"
@@ -86,6 +104,27 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
    az ad app federated-credential create --id $CLIENT_ID --parameters "{ \"name\": \"$GITHUB_ORGANIZATION-$REPOSITORY-Environment-Staging\", \"issuer\": \"https://token.actions.githubusercontent.com\", \"subject\": \"repo:$GITHUB_ORGANIZATION/$REPOSITORY:environment:Staging\", \"description\": \"Deploy to staging environment\", \"audiences\": [ \"api://AzureADTokenExchange\" ] }"
 
    az ad app federated-credential create --id $CLIENT_ID --parameters "{ \"name\": \"$GITHUB_ORGANIZATION-$REPOSITORY-Environment-Production\", \"description\": \"Deploy to production environment\", \"issuer\": \"https://token.actions.githubusercontent.com\", \"subject\": \"repo:$GITHUB_ORGANIZATION/$REPOSITORY:environment:Production\", \"audiences\": [ \"api://AzureADTokenExchange\" ] }"
+   ```
+
+1. Create SQL admin group:
+
+   ```bash
+   GROUP_DISPLAY_NAME="GitHub Demo Movie Database Admins"
+   GROUP_MAIL_NICKNAME="github-demo-movie-database-admins"
+   GROUP_ID=$(az ad group create --display-name "$GROUP_DISPLAY_NAME" --mail-nickname "$GROUP_MAIL_NICKNAME" --query id --output tsv)
+   ```
+
+1. Add yourself to the group:
+
+   ```bash
+   ME=$(az ad signed-in-user show --query id --output tsv)
+   az ad group member add --group $GROUP_ID --member-id $ME
+   ```
+
+1. Add the _SPN_ to the group:
+
+   ```bash
+   az ad group member add --group $GROUP_ID --member-id $OBJECT_ID
    ```
 
 1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following secrets:
@@ -98,34 +137,14 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
    - `LOCATION`: e.g. `swedencentral`
    - `RESOURCE_GROUP`: e.g. `GitHubDemo`
-   - `CONTAINER_REGISTRY`: Name will be autogenerated when you deploy the infrastructure workflow
-   - `WEBAPP`: Name will be autogenerated when you deploy the infrastructure workflow
-   - `DEPLOYMENT_SLOT`: `staging`
-
-1. Create SQL admin group:
-
-   ```bash
-   GROUP_DISPLAY_NAME="GitHub Demo Movie Database Admins"
-   GROUP_MAIL_NICKNAME="github-demo-movie-database-admins"
-   GROUP=$(az ad group create --display-name "$GROUP_DISPLAY_NAME" --mail-nickname "$GROUP_MAIL_NICKNAME" --query id --output tsv)
-   ```
-
-1. Add yourself to the group:
-
-   ```bash
-   ME=$(az ad signed-in-user show --query id --output tsv)
-   az ad group member add --group $GROUP --member-id $ME
-   ```
-
-1. Add the _SPN_ to the group:
-
-   ```bash
-   az ad group member add --group $GROUP --member-id $OBJECT_ID
-   ```
 
 1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
-1. Deploy the _infrastructure_ pipeline.
-1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the `WEBAPP` variable.
+1. Push the changes to trigger the _infrastructure_ workflow.
+1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following variables:
+
+   - `CONTAINER_REGISTRY`: `registry0{suffix}`
+   - `WEBAPP`: `web-{suffix}`
+
 1. Execute scripts:
 
    ```bash
@@ -143,7 +162,15 @@ This project demonstrates a number of capabilities in GitHub and Microsoft Azure
 
    **Note**: When asked _Do you want to set current user as Entra admin?:_, answer `n`.
 
-1. Deploy the _application_ pipeline.
+1. Run the _application_ workflow from GitHub.
+
+## Clean up
+
+```bash
+az group delete --name $RESOURCE_GROUP
+az ad group delete --group $GROUP_ID
+az ad app delete --id $CLIENT_ID
+```
 
 ## Notes
 
