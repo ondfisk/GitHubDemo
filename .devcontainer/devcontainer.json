@@ -12,9 +12,6 @@
     "ghcr.io/devcontainers/features/dotnet:2": {
       "version": "lts"
     },
-    "ghcr.io/devcontainers/features/powershell:1": {
-      "modules": "Microsoft.Graph.Authentication,Microsoft.Graph.Applications"
-    },
     "ghcr.io/jlaundry/devcontainer-features/mssql-odbc-driver:1": {}
   },
   "customizations": {
@@ -33,7 +30,6 @@
         "ms-dotnettools.csharp",
         "ms-dotnettools.vscodeintellicode-csharp",
         "ms-azuretools.vscode-azureresourcegroups",
-        "ms-vscode.powershell",
         "redhat.vscode-yaml",
         "streetsidesoftware.code-spell-checker"
       ]

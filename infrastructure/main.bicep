@@ -14,6 +14,8 @@ var logAnalyticsWorkspaceName = 'log-${suffix}'
 var appServicePlanName = 'plan-${suffix}'
 var webAppName = 'web-${suffix}'
 var sqlServerName = 'sql-${suffix}'
+var containerRegistryName = 'registry0${suffix}'
+var acrPull = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logAnalyticsWorkspaceName
@@ -69,30 +71,31 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
       XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
     }
   }
+}
 
-  resource deploymentSlot 'slots' = {
-    name: deploymentSlotName
-    location: location
-    kind: 'app,linux,container'
-    identity: {
-      type: 'SystemAssigned'
+resource deploymentSlot 'Microsoft.Web/sites/slots@2024-04-01' = {
+  parent: webApp
+  name: deploymentSlotName
+  location: location
+  kind: 'app,linux,container'
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    serverFarmId: appServicePlan.id
+    siteConfig: {
+      acrUseManagedIdentityCreds: true
+      healthCheckPath: '/healthz'
     }
+  }
+
+  resource stagingAppSettings 'config' = {
+    name: 'appsettings'
     properties: {
-      serverFarmId: appServicePlan.id
-      siteConfig: {
-        acrUseManagedIdentityCreds: true
-        healthCheckPath: '/healthz'
-      }
-    }
-
-    resource stagingAppSettings 'config' = {
-      name: 'appsettings'
-      properties: {
-        APPLICATIONINSIGHTS_CONNECTION_STRING: stagingApplicationInsights.properties.ConnectionString
-        ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-        AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${stagingDatabaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity'
-        XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
-      }
+      APPLICATIONINSIGHTS_CONNECTION_STRING: stagingApplicationInsights.properties.ConnectionString
+      ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
+      AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${stagingDatabaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity'
+      XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
     }
   }
 }
@@ -157,5 +160,33 @@ resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' = {
       name: stagingDatabaseSku
     }
     properties: {}
+  }
+}
+
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
+  name: containerRegistryName
+  location: location
+  sku: {
+    name: 'Basic'
+  }
+}
+
+resource webAppRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(containerRegistry.id, webApp.id, acrPull)
+  scope: containerRegistry
+  properties: {
+    principalId: webApp.identity.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: acrPull
+  }
+}
+
+resource deploymentSlotRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(containerRegistry.id, deploymentSlot.id, acrPull)
+  scope: containerRegistry
+  properties: {
+    principalId: deploymentSlot.identity.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: acrPull
   }
 }
