@@ -125,7 +125,7 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
+            CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot staging --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
             echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
 
       - name: Apply database migrations
@@ -138,7 +138,7 @@ jobs:
         uses: azure/webapps-deploy@v3.0.2
         with:
           app-name: ${{ vars.WEBAPP }}
-          slot-name: ${{ vars.DEPLOYMENT_SLOT }}
+          slot-name: staging
           images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ github.sha }}
 
   production:
@@ -185,4 +185,4 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az webapp deployment slot swap --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot ${{ vars.DEPLOYMENT_SLOT }}
+            az webapp deployment slot swap --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEBAPP }} --slot staging
