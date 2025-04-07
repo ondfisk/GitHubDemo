@@ -14,7 +14,7 @@ var logAnalyticsWorkspaceName = 'log-${suffix}'
 var appServicePlanName = 'plan-${suffix}'
 var webAppName = 'web-${suffix}'
 var sqlServerName = 'sql-${suffix}'
-var containerRegistryName = 'registry-${suffix}'
+var containerRegistryName = 'registry0${suffix}'
 var acrPull = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
