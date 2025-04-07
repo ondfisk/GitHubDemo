@@ -32,6 +32,7 @@
     "resourcegroup",
     "serverfarms",
     "USERPROFILE",
-    "vscodeintellicode"
+    "vscodeintellicode",
+    "xunit"
   ]
 }
