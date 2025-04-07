@@ -163,11 +163,15 @@ resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' = {
   }
 }
 
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' = {
   name: containerRegistryName
   location: location
   sku: {
     name: 'Basic'
+  }
+  properties: {
+    adminUserEnabled: false
+    anonymousPullEnabled: false
   }
 }
 
