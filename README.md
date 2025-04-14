@@ -21,14 +21,14 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    dotnet dev-certs https --trust
    ```
 
-1. Copy development certificate to WSL_
+1. Copy development certificate to WSL\_
 
    ```bash
     cp /mnt/c/Users/[Windows-Username]/.aspnet/https/aspnetapp.pfx ~/.aspnet/https
    ```
 
 1. Fork the repository.
-1. Clone repository to WSL and open in VS Code.
+1. Clone repository to WSL and open in Visual Studio Code.
 1. Open in _Dev Container_.
 1. Configure database:
 
