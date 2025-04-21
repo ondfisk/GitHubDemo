@@ -74,29 +74,23 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
 ## Deploy to Azure
 
+**Note**: Run commands from the _Cloud Shell_.
+
 1. Declare input variables
 
    ```bash
-   TENANT="..."
-   SUBSCRIPTION="..."
-   GROUP_DISPLAY_NAME="GitHub Demo Movie Database Admins"
-   GROUP_MAIL_NICKNAME="github-demo-movie-database-admins"
-   APP_DISPLAY_NAME="..."
+   SUBSCRIPTION=$(az account show --query id --output tsv)
+   APP_REGISTRATION_DISPLAY_NAME="..."
    GITHUB_ORGANIZATION="..."
    REPOSITORY="..."
-   ```
-
-1. Login:
-
-   ```bash
-   az login --tenant $TENANT
-   az account set --subscription $SUBSCRIPTION
+   GROUP_DISPLAY_NAME="GitHub Demo Movie Database Admins"
+   GROUP_MAIL_NICKNAME="github-demo-movie-database-admins"
    ```
 
 1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_:
 
    ```bash
-   CLIENT_ID=$(az ad app create --display-name $APP_DISPLAY_NAME --query appId --output tsv)
+   CLIENT_ID=$(az ad app create --display-name $APP_REGISTRATION_DISPLAY_NAME --query appId --output tsv)
    OBJECT_ID=$(az ad sp create --id $CLIENT_ID --query id --output tsv)
 
    az role assignment create --assignee $OBJECT_ID --role "Owner" --scope "/subscriptions/$SUBSCRIPTION"
@@ -109,10 +103,10 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 1. Create SQL admin group:
 
    ```bash
-   GROUP_DISPLAY_NAME="GitHub Demo Movie Database Admins"
-   GROUP_MAIL_NICKNAME="github-demo-movie-database-admins"
    GROUP_ID=$(az ad group create --display-name "$GROUP_DISPLAY_NAME" --mail-nickname "$GROUP_MAIL_NICKNAME" --query id --output tsv)
    ```
+
+1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
 
 1. Add yourself to the group:
 
@@ -133,17 +127,7 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    - `AZURE_SUBSCRIPTION_ID`
    - `AZURE_TENANT_ID`
 
-1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following variables:
-
-   - `LOCATION`: e.g. `swedencentral`
-   - `RESOURCE_GROUP`: e.g. `GitHubDemo`
-
-1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
 1. Push the changes to trigger the _infrastructure_ workflow.
-1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following variables:
-
-   - `CONTAINER_REGISTRY`: `registry0{suffix}`
-   - `WEBAPP`: `web-{suffix}`
 
 1. Execute scripts:
 
