@@ -114,11 +114,8 @@ jobs:
     environment: Production
 
     permissions:
-      contents: write
+      contents: read
       id-token: write
-
-    env:
-      GH_TOKEN: ${{ github.token }}
 
     steps:
       - name: Checkout
@@ -152,10 +149,3 @@ jobs:
           template: infrastructure/main.json
           parameters: infrastructure/main.parameters.json
           deploymentMode: Incremental
-
-      - name: Set Repository Variables
-        run: |
-          gh variable set RESOURCE_GROUP --body "${{ env.RESOURCE_GROUP }}"
-          gh variable set LOCATION --body "${{ env.LOCATION }}"
-          gh variable set WEB_APP --body "${{ steps.deploy.outputs.webAppName }}"
-          gh variable set CONTAINER_REGISTRY --body "${{ steps.deploy.outputs.containerRegistryName }}"

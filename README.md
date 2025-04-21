@@ -74,10 +74,11 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
 ## Deploy to Azure
 
-1. Login to Azure:
+1. Login to Azure and GitHub:
 
    ```bash
-   az login --use-device-code
+   az login
+   gh auth login
    ```
 
 1. Declare input variables
@@ -134,7 +135,7 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
 1. Push the changes to trigger the _infrastructure_ workflow.
 
-1. Execute scripts:
+1. Grant web app permission to database:
 
    ```bash
    WEB_APP=$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
@@ -149,6 +150,16 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    ```
 
    **Note**: When asked _Do you want to set current user as Entra admin?:_, answer `n`.
+
+1. Create repository variables:
+
+   ```bash
+   CONTAINER_REGISTRY=$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
+
+   gh variable set RESOURCE_GROUP --body "$RESOURCE_GROUP"
+   gh variable set WEB_APP --body "$WEB_APP"
+   gh variable set CONTAINER_REGISTRY --body "$CONTAINER_REGISTRY"
+   ```
 
 1. Run the _application_ workflow from GitHub.
 
