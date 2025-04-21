@@ -81,11 +81,25 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Configure SQL Database Permissions
+        run: >
+          az webapp connection create sql
+          --resource-group "${{ env.RESOURCE_GROUP }}"
+          --name "web-hqmu7rxj"
+          --slot "staging"
+          --target-resource-group "${{ env.RESOURCE_GROUP }}"
+          --server "sql-hqmu7rxj"
+          --database "MoviesStaging"
+          --system-identity
+          --client-type dotnet
+          --connection "MoviesStaging"
+          --opt-out configinfo
+
       - name: Create Resource Group
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az group create --name ${{ env.RESOURCE_GROUP }} --location "${{ env.LOCATION }}"
+            az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}"
 
       - name: Validate ARM Deployment
         uses: azure/arm-deploy@v2
@@ -138,7 +152,7 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az group create --name ${{ env.RESOURCE_GROUP }} --location "${{ env.LOCATION }}"
+            az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}"
 
       - name: Deploy Resources
         id: deploy
@@ -149,6 +163,20 @@ jobs:
           template: infrastructure/main.json
           parameters: infrastructure/main.parameters.json
           deploymentMode: Incremental
+
+      - name: Configure SQL Database Permissions
+        run: >
+          az webapp connection create sql
+          --resource-group "${{ env.RESOURCE_GROUP }}"
+          --name "${{ steps.deploy.outputs.webAppName }}"
+          --slot "staging"
+          --target-resource-group "${{ env.RESOURCE_GROUP }}"
+          --server "${{ steps.deploy.outputs.sqlServerName }}"
+          --database "MoviesStaging"
+          --system-identity
+          --client-type dotnet
+          --connection "MoviesStaging"
+          --opt-out configinfo
 
       - name: Set Repository Variables
         run: |

@@ -16,6 +16,7 @@
     "azureappservice",
     "azureresourcegroups",
     "bicepparam",
+    "configinfo",
     "CONNECTIONSTRING",
     "Creds",
     "davidanson",

@@ -195,4 +195,5 @@ resource deploymentSlotRoleAssignment 'Microsoft.Authorization/roleAssignments@2
 }
 
 output webAppName string = webApp.name
+output sqlServerName string = sqlServer.name
 output containerRegistryName string = containerRegistry.name
