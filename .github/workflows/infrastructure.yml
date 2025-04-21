@@ -57,7 +57,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
     environment: Staging
@@ -91,8 +91,8 @@ jobs:
         with:
           scope: resourcegroup
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          template: infrastructure/main.bicep
-          parameters: infrastructure/main.bicepparam
+          template: infrastructure/main.json
+          parameters: infrastructure/main.parameters.json
           deploymentMode: Validate
 
       - name: What-if ARM Deployment
@@ -100,14 +100,14 @@ jobs:
         with:
           scope: resourcegroup
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          template: infrastructure/main.bicep
-          parameters: infrastructure/main.bicepparam
+          template: infrastructure/main.json
+          parameters: infrastructure/main.parameters.json
           deploymentMode: Incremental
           additionalArguments: --what-if
 
   deploy:
     name: Deploy
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main'
     environment: Production
@@ -142,8 +142,8 @@ jobs:
         with:
           scope: resourcegroup
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          template: infrastructure/main.bicep
-          parameters: infrastructure/main.bicepparam
+          template: infrastructure/main.json
+          parameters: infrastructure/main.parameters.json
           deploymentMode: Incremental
 
       - name: Set Repository Variables
