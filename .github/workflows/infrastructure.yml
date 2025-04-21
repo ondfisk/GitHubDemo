@@ -20,6 +20,7 @@ concurrency:
   group: ${{ github.ref }}
 
 permissions: {}
+
 env:
   RESOURCE_GROUP: GitHubDemo
   LOCATION: Sweden Central
@@ -84,7 +85,7 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az group create --name ${{ env.RESOURCE_GROUP }} --location "${{ env.LOCATION }}"
+            az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}"
 
       - name: Validate ARM Deployment
         uses: azure/arm-deploy@v2
@@ -116,6 +117,9 @@ jobs:
       contents: write
       id-token: write
 
+    env:
+      GH_TOKEN: ${{ github.token }}
+
     steps:
       - name: Download Bicep Files
         uses: actions/download-artifact@v4.2.1
@@ -134,7 +138,7 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az group create --name ${{ env.RESOURCE_GROUP }} --location "${{ env.LOCATION }}"
+            az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}"
 
       - name: Deploy Resources
         id: deploy
