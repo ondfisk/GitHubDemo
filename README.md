@@ -74,12 +74,17 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
 ## Deploy to Azure
 
-**Note**: Run commands from the _Cloud Shell_.
+1. Login to Azure:
+
+   ```bash
+   az login --use-device-code
+   ```
 
 1. Declare input variables
 
    ```bash
    SUBSCRIPTION=$(az account show --query id --output tsv)
+   RESOURCE_GROUP="GitHubDemo"
    APP_REGISTRATION_DISPLAY_NAME="..."
    GITHUB_ORGANIZATION="..."
    REPOSITORY="..."
@@ -132,16 +137,15 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 1. Execute scripts:
 
    ```bash
-   RESOURCE_GROUP="GitHubDemo"
-   WEBAPP="..."
-   SQL_SERVER="..."
+   WEB_APP=$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
+   SQL_SERVER=$(az sql server list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
    SLOT="staging"
    DATABASE="Movies"
    STAGING_DATABASE="MoviesStaging"
 
-   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $STAGING_DATABASE --system-identity --client-type dotnet --connection $STAGING_DATABASE --new
+   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEB_APP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $STAGING_DATABASE --system-identity --client-type dotnet --connection $STAGING_DATABASE --new --opt-out configinfo
 
-   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEBAPP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE --new
+   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEB_APP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE --new --opt-out configinfo
    ```
 
    **Note**: When asked _Do you want to set current user as Entra admin?:_, answer `n`.
