@@ -16,7 +16,13 @@ name: Infrastructure
       - infrastructure/**
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.ref }}
+
 permissions: {}
+env:
+  RESOURCE_GROUP: GitHubDemo
+  LOCATION: Sweden Central
 
 jobs:
   build:
@@ -78,24 +84,24 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az group create --name ${{ vars.RESOURCE_GROUP }} --location ${{ vars.LOCATION }}
+            az group create --name ${{ env.RESOURCE_GROUP }} --location "${{ env.LOCATION }}"
 
       - name: Validate ARM Deployment
         uses: azure/arm-deploy@v2
         with:
           scope: resourcegroup
-          resourceGroupName: ${{ vars.RESOURCE_GROUP }}
-          template: infrastructure/main.bicep
-          parameters: infrastructure/main.bicepparam
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          template: infrastructure/main.json
+          parameters: infrastructure/main.parameters.json
           deploymentMode: Validate
 
       - name: What-if ARM Deployment
         uses: azure/arm-deploy@v2
         with:
           scope: resourcegroup
-          resourceGroupName: ${{ vars.RESOURCE_GROUP }}
-          template: infrastructure/main.bicep
-          parameters: infrastructure/main.bicepparam
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          template: infrastructure/main.json
+          parameters: infrastructure/main.parameters.json
           deploymentMode: Incremental
           additionalArguments: --what-if
 
@@ -107,7 +113,7 @@ jobs:
     environment: Production
 
     permissions:
-      contents: read
+      contents: write
       id-token: write
 
     steps:
@@ -128,14 +134,21 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az group create --name ${{ vars.RESOURCE_GROUP }} --location ${{ vars.LOCATION }}
+            az group create --name ${{ env.RESOURCE_GROUP }} --location "${{ env.LOCATION }}"
 
       - name: Deploy Resources
         id: deploy
         uses: azure/arm-deploy@v2
         with:
           scope: resourcegroup
-          resourceGroupName: ${{ vars.RESOURCE_GROUP }}
-          template: infrastructure/main.bicep
-          parameters: infrastructure/main.bicepparam
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          template: infrastructure/main.json
+          parameters: infrastructure/main.parameters.json
           deploymentMode: Incremental
+
+      - name: Set Repository Variables
+        run: |
+          gh variable set RESOURCE_GROUP --body "${{ env.RESOURCE_GROUP }}"
+          gh variable set LOCATION --body "${{ env.LOCATION }}"
+          gh variable set WEB_APP --body "${{ steps.deploy.outputs.webAppName }}"
+          gh variable set CONTAINER_REGISTRY --body "${{ steps.deploy.outputs.containerRegistryName }}"

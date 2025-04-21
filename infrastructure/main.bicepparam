@@ -1,4 +1,4 @@
 using './main.bicep'
 
-param sqlAdminGroupName = 'ondfisk GitHub Demo Movie Database Admins'
-param sqlAdminGroupId = '88849f7f-b29b-4238-aaeb-75adc347bf6e'
+param sqlAdminGroupName = 'Movie Database Admins'
+param sqlAdminGroupId = 'a0273ec3-f02c-4f19-8ff1-f8131d6fa3bf'
