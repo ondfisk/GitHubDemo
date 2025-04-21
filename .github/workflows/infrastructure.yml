@@ -17,7 +17,7 @@ name: Infrastructure
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.ref }}
+  group: infrastructure-and-application
 
 permissions: {}
 
@@ -50,11 +50,11 @@ jobs:
             az bicep build --file infrastructure/main.bicep --outfile infrastructure/main.json
             az bicep build-params --file infrastructure/main.bicepparam --outfile infrastructure/main.parameters.json
 
-      - name: Upload Bicep Files
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
           name: infrastructure
-          path: infrastructure/
+          path: infrastructure/*.json
 
   test:
     name: Test
@@ -68,7 +68,7 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download Bicep Files
+      - name: Download Artifacts
         uses: actions/download-artifact@v4.2.1
         with:
           name: infrastructure
@@ -121,7 +121,10 @@ jobs:
       GH_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Download Bicep Files
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Download Artifacts
         uses: actions/download-artifact@v4.2.1
         with:
           name: infrastructure
