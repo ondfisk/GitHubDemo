@@ -193,3 +193,6 @@ resource deploymentSlotRoleAssignment 'Microsoft.Authorization/roleAssignments@2
     roleDefinitionId: acrPull
   }
 }
+
+output webAppName string = webApp.name
+output containerRegistryName string = containerRegistry.name
