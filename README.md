@@ -127,11 +127,15 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    az ad group member add --group $GROUP_ID --member-id $OBJECT_ID
    ```
 
-1. In _GitHub Settings_ -> _Secrets and Variables_ -> _Actions_, set the following secrets:
+1. Set repository secrets:
 
-   - `AZURE_CLIENT_ID`
-   - `AZURE_SUBSCRIPTION_ID`
-   - `AZURE_TENANT_ID`
+   ```bash
+   TENANT=$(az account show --query tenantId --output tsv)
+
+   gh secret set AZURE_TENANT_ID --body "$TENANT"
+   gh secret set AZURE_SUBSCRIPTION_ID --body "$SUBSCRIPTION"
+   gh secret set AZURE_CLIENT_ID --body "$CLIENT_ID"
+   ```
 
 1. Push the changes to trigger the _infrastructure_ workflow.
 
@@ -151,7 +155,7 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
    **Note**: When asked _Do you want to set current user as Entra admin?:_, answer `n`.
 
-1. Create repository variables:
+1. Set repository variables:
 
    ```bash
    CONTAINER_REGISTRY=$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
