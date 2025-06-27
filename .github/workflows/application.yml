@@ -136,7 +136,7 @@ jobs:
             POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
             DATABASE="Movies"
             PASSWORD="$(az account get-access-token --resource https://ossrdbms-aad.database.windows.net --query accessToken --output tsv)"
-            CONNECTION_STRING="host=$POSTGRESQL_SERVER_HOST port=5432 dbname=$DATABASE user=$USER sslmode=require"
+            CONNECTION_STRING="host=$POSTGRESQL_SERVER_HOST port=5432 dbname=$DATABASE user='$USER' password='$PASSWORD' sslmode=require"
 
             echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
             echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
@@ -167,6 +167,7 @@ jobs:
     env:
       RESOURCE_GROUP: GitHubDemo
       WEBAPP: ""
+      CONTAINER_REGISTRY: ""
       POSTGRESQL_SERVER: ""
       CONNECTION_STRING: ""
 
@@ -191,24 +192,26 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            WEBAPP="$(az webapp list --resource-group ${{ env.RESOURCE_GROUP }} --query [].name --output tsv)"
-            CONTAINER_REGISTRY="$(az acr list --resource-group ${{ env.RESOURCE_GROUP }} --query [].name --output tsv)"
-            POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group ${{ env.RESOURCE_GROUP }} --query [0].name --output tsv)"
+            RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
+            USER="${{ secrets.AZURE_CLIENT_ID }}"
+            WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
+            CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
+            POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
             POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
             DATABASE="Movies"
-            USER="${{ secrets.AZURE_CLIENT_ID }}"
             PASSWORD="$(az account get-access-token --resource https://ossrdbms-aad.database.windows.net --query accessToken --output tsv)"
-            CONNECTION_STRING="psql \"host=$POSTGRESQL_SERVER_HOST port=5432 dbname=$DATABASE user='$USER' password='$PASSWORD' sslmode=require\""
+            CONNECTION_STRING="host=$POSTGRESQL_SERVER_HOST port=5432 dbname=$DATABASE user='$USER' password='$PASSWORD' sslmode=require"
 
             echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
+            echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
             echo "POSTGRESQL_SERVER=$POSTGRESQL_SERVER" >> "$GITHUB_ENV"
             echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
 
       - name: Apply database migrations
         uses: azure/postgresql@v1
         with:
-          server-name: ${{ env.POSTGRESQL_SERVER }}
           connection-string: ${{ env.CONNECTION_STRING }}
+          server-name: ${{ env.POSTGRESQL_SERVER }}
           plsql-file: migrate.sql
 
       - name: Swap Staging With Production
