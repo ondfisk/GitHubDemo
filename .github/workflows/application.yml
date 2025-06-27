@@ -136,7 +136,7 @@ jobs:
             POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
             DATABASE="Movies"
             PASSWORD="$(az account get-access-token --resource https://ossrdbms-aad.database.windows.net --query accessToken --output tsv)"
-            CONNECTION_STRING="host=$POSTGRESQL_SERVER_HOST port=5432 dbname=$DATABASE user='$USER' password='$PASSWORD' sslmode=require"
+            CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='$USER' password='$PASSWORD' sslmode=require"
 
             echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
             echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
@@ -200,7 +200,7 @@ jobs:
             POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
             DATABASE="Movies"
             PASSWORD="$(az account get-access-token --resource https://ossrdbms-aad.database.windows.net --query accessToken --output tsv)"
-            CONNECTION_STRING="host=$POSTGRESQL_SERVER_HOST port=5432 dbname=$DATABASE user='$USER' password='$PASSWORD' sslmode=require"
+            CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='$USER' password='$PASSWORD' sslmode=require"
 
             echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
             echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
