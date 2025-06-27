@@ -8,6 +8,9 @@
   "[github-actions-workflow]": {
     "editor.tabSize": 2
   },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
   "cSpell.words": [
     "appsettings",
     "aspnet",
@@ -16,17 +19,23 @@
     "azureappservice",
     "azureresourcegroups",
     "bicepparam",
+    "buildtransitive",
     "configinfo",
     "CONNECTIONSTRING",
+    "contentfiles",
     "Creds",
     "davidanson",
+    "devcontainers",
     "distro",
     "dotnettools",
+    "Entityframework",
     "Entra",
     "esbenp",
     "githubdemo",
     "healthz",
+    "jlaundry",
     "Lumet",
+    "Npgsql",
     "ondfisk",
     "Passw",
     "passwordless",
@@ -34,6 +43,7 @@
     "resourcegroup",
     "serverfarms",
     "serviceconnector",
+    "Testcontainers",
     "USERPROFILE",
     "vscodeintellicode",
     "xunit"

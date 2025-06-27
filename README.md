@@ -34,7 +34,7 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
    ```bash
    # Set development connection string:
-   dotnet user-secrets set "ConnectionStrings:Default" "Data Source=localhost,1433;Initial Catalog=Movies;User ID=sa;Password=<YourStrong@Passw0rd>;TrustServerCertificate=True" --project src/MovieApi/
+   dotnet user-secrets set "ConnectionStrings:Default" "Data Source=localhost,5432;Database=postgres;User ID=postgres;Password=postgres" --project src/MovieApi/
 
    # Update database:
    dotnet ef database update --project src/MovieApi/

@@ -8,11 +8,11 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 }
 else
 {
-    builder.Services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING")));
+    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING")));
 }
 
 if (Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING") is not null)
@@ -32,9 +32,9 @@ app.UseHttpsRedirection();
 
 app.MapHealthChecks("/healthz");
 
-app.MapGet("/movies", async (IMovieService movieService) =>
+app.MapGet("/movies", async (IMovieService movieService, CancellationToken cancellationToken) =>
 {
-    return await movieService.ReadAll();
+    return await movieService.ReadAll(cancellationToken);
 })
 .WithName("GetMovies");
 

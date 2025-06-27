@@ -1,5 +1,7 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet-postgres
 {
-  "name": "GitHub Demo",
+  "name": "C# (.NET) and PostgreSQL",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -8,12 +10,11 @@
       "installBicep": true,
       "extensions": "serviceconnector-passwordless"
     },
-    "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     "ghcr.io/devcontainers/features/dotnet:2": {
       "version": "lts"
     },
-    "ghcr.io/jlaundry/devcontainer-features/mssql-odbc-driver:1": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "customizations": {
     "vscode": {
@@ -36,7 +37,11 @@
       ]
     }
   },
-  "forwardPorts": [1433, 8000, 8001],
+  "forwardPorts": [
+    5432,
+    8000,
+    8001
+  ],
   "remoteEnv": {
     "ASPNETCORE_ENVIRONMENT": "Development",
     "ASPNETCORE_HTTP_PORTS": "8000",

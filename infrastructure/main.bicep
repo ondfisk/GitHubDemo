@@ -3,8 +3,8 @@ param appServicePlanSku string = 'P0v3'
 param databaseSku string = 'Basic'
 param stagingDatabaseSku string = 'Basic'
 
-param sqlAdminGroupName string
-param sqlAdminGroupId string
+param databaseAdminGroupName string
+param databaseAdminGroupId string
 
 var deploymentSlotName = 'staging'
 var databaseName = 'Movies'
@@ -129,9 +129,9 @@ resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' = {
     administrators: {
       administratorType: 'ActiveDirectory'
       azureADOnlyAuthentication: true
-      login: sqlAdminGroupName
+      login: databaseAdminGroupName
       principalType: 'Group'
-      sid: sqlAdminGroupId
+      sid: databaseAdminGroupId
     }
   }
 
