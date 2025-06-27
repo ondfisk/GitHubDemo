@@ -2,16 +2,16 @@ namespace MovieApi.Tests.Models;
 
 public sealed class MovieDbContextTests : IAsyncLifetime
 {
-    private readonly MsSqlContainer _database = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:latest").Build();
+    private readonly PostgreSqlContainer _database = new PostgreSqlBuilder().Build();
 
     [Fact]
     public async Task After_migration_database_contains_people()
     {
         using var context = BuildContext();
 
-        await context.Database.MigrateAsync();
+        await context.Database.MigrateAsync(TestContext.Current.CancellationToken);
 
-        var people = await context.People.ToListAsync();
+        var people = await context.People.ToListAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(8, people.Count);
     }
@@ -21,22 +21,29 @@ public sealed class MovieDbContextTests : IAsyncLifetime
     {
         using var context = BuildContext();
 
-        await context.Database.MigrateAsync();
+        await context.Database.MigrateAsync(TestContext.Current.CancellationToken);
 
-        var movies = await context.Movies.ToListAsync();
+        var movies = await context.Movies.ToListAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(10, movies.Count);
     }
 
-    public Task InitializeAsync() => _database.StartAsync();
+    public async ValueTask InitializeAsync()
+    {
+        await _database.StartAsync();
+    }
 
-    public Task DisposeAsync() => _database.DisposeAsync().AsTask();
+    public async ValueTask DisposeAsync()
+    {
+        await _database.DisposeAsync();
+        GC.SuppressFinalize(this);
+    }
 
     private MovieDbContext BuildContext()
     {
         var connectionString = _database.GetConnectionString();
 
-        var options = new DbContextOptionsBuilder<MovieDbContext>().UseSqlServer(connectionString).Options;
+        var options = new DbContextOptionsBuilder<MovieDbContext>().UseNpgsql(connectionString).Options;
 
         return new MovieDbContext(options);
     }

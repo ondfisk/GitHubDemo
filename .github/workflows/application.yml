@@ -19,7 +19,8 @@ name: Application
   workflow_dispatch:
 
 concurrency:
-  group: infrastructure-and-application
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions: {}
 
@@ -31,6 +32,7 @@ jobs:
 
     env:
       CONFIGURATION: Release
+      RESOURCE_GROUP: GitHubDemo
 
     permissions:
       contents: read
@@ -54,17 +56,10 @@ jobs:
         run: dotnet build --no-restore --configuration ${{ env.CONFIGURATION }}
 
       - name: .NET Test
-        run: dotnet test --no-build --configuration ${{ env.CONFIGURATION }} --logger:"xunit;LogFilePath=TestResult.xml"
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2.19.0
-        if: always()
-        with:
-          files: |
-            **/TestResult.xml
+        run: dotnet test --no-build --configuration ${{ env.CONFIGURATION }}
 
       - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags="${{ github.sha }}"
+        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags=${{ github.sha }}
 
       - name: Azure Login
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
@@ -77,11 +72,12 @@ jobs:
       - name: Push Image to Azure Container Registry
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
         run: |
-          az acr login --name ${{ vars.CONTAINER_REGISTRY }}
-          IMAGE="${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo"
+          CONTAINER_REGISTRY="$(az acr list --resource-group ${{ env.RESOURCE_GROUP }} --query [].name --output tsv)"
+          az acr login --name "$CONTAINER_REGISTRY"
+          IMAGE="$CONTAINER_REGISTRY.azurecr.io/ondfisk-githubdemo"
           docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ github.sha }}"
           docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ env.IMAGE_TAG }}"
-          docker push $IMAGE --all-tags
+          docker push "$IMAGE" --all-tags
         env:
           IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
 
@@ -105,7 +101,11 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
 
     env:
-      CONNECTION_STRING:
+      RESOURCE_GROUP: GitHubDemo
+      WEBAPP: ""
+      CONTAINER_REGISTRY: ""
+      POSTGRESQL_SERVER: ""
+      CONNECTION_STRING: ""
 
     permissions:
       id-token: write
@@ -124,25 +124,38 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get Connection String
+      - name: Get variables
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEB_APP }} --slot staging --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
-            echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
+            RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
+            DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
+            WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
+            CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
+            POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
+            POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
+            DATABASE="MoviesStaging"
+            PASSWORD="$(az account get-access-token --resource-type oss-rdbms --query accessToken --output tsv)"
+            CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='$DATABASE_USER' password='$PASSWORD' sslmode=require options='--client_min_messages=WARNING'"
+
+            echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
+            echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
+            echo "POSTGRESQL_SERVER=$POSTGRESQL_SERVER" >> "$GITHUB_ENV"
+            echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
 
       - name: Apply database migrations
-        uses: Azure/sql-action@v2.3
+        uses: azure/postgresql@v1
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
-          path: migrate.sql
+          server-name: ${{ env.POSTGRESQL_SERVER }}
+          plsql-file: migrate.sql
 
       - name: Deploy Web App Container
         uses: azure/webapps-deploy@v3.0.2
         with:
-          app-name: ${{ vars.WEB_APP }}
+          app-name: ${{ env.WEBAPP }}
           slot-name: staging
-          images: ${{ vars.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ github.sha }}
+          images: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ github.sha }}
 
   production:
     name: Deploy to Production
@@ -152,7 +165,11 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     env:
-      CONNECTION_STRING:
+      RESOURCE_GROUP: GitHubDemo
+      WEBAPP: ""
+      CONTAINER_REGISTRY: ""
+      POSTGRESQL_SERVER: ""
+      CONNECTION_STRING: ""
 
     permissions:
       id-token: write
@@ -171,21 +188,34 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get Connection String
+      - name: Get variables
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            CONNECTION_STRING=$(az webapp config appsettings list --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEB_APP }} --query "[?name=='AZURE_SQL_CONNECTIONSTRING'].value" --output tsv)
-            echo "CONNECTION_STRING=${CONNECTION_STRING/Authentication=ActiveDirectoryManagedIdentity/Authentication=\"Active Directory Default\"}" >> "$GITHUB_ENV"
+            RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
+            DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
+            WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
+            CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
+            POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
+            POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
+            DATABASE="Movies"
+            PASSWORD="$(az account get-access-token --resource-type oss-rdbms --query accessToken --output tsv)"
+            CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='$DATABASE_USER' password='$PASSWORD' sslmode=require options='--client_min_messages=WARNING'"
+
+            echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
+            echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
+            echo "POSTGRESQL_SERVER=$POSTGRESQL_SERVER" >> "$GITHUB_ENV"
+            echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
 
       - name: Apply database migrations
-        uses: Azure/sql-action@v2.3
+        uses: azure/postgresql@v1
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
-          path: migrate.sql
+          server-name: ${{ env.POSTGRESQL_SERVER }}
+          plsql-file: migrate.sql
 
       - name: Swap Staging With Production
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az webapp deployment slot swap --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ vars.WEB_APP }} --slot staging
+            az webapp deployment slot swap --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.WEBAPP }} --slot staging

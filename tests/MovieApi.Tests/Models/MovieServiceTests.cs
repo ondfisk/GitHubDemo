@@ -2,9 +2,9 @@
 
 public class MovieServiceTests : IAsyncLifetime
 {
-    private SqliteConnection _connection;
-    private MovieDbContext _context;
-    private MovieService _service;
+    private readonly SqliteConnection _connection;
+    private readonly MovieDbContext _context;
+    private readonly MovieService _service;
 
     public MovieServiceTests()
     {
@@ -17,7 +17,7 @@ public class MovieServiceTests : IAsyncLifetime
     [Fact]
     public async Task ReadAll_should_return_all_movies()
     {
-        var movies = await _service.ReadAll();
+        var movies = await _service.ReadAll(TestContext.Current.CancellationToken);
 
         Assert.Equal(10, movies.Count());
     }
@@ -25,22 +25,23 @@ public class MovieServiceTests : IAsyncLifetime
     [Fact]
     public async Task ReadAll_should_map_all_properties()
     {
-        var movies = await _service.ReadAll();
+        var movies = await _service.ReadAll(TestContext.Current.CancellationToken);
 
         var pulpFiction = new MovieDTO(8, "Pulp Fiction", "Quentin Tarantino", 1994);
 
         Assert.Contains(pulpFiction, movies);
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _connection.OpenAsync();
         await _context.Database.EnsureCreatedAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _context.DisposeAsync();
         await _connection.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 }

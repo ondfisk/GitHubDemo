@@ -1,26 +1,17 @@
 param location string = resourceGroup().location
 param appServicePlanSku string = 'P0v3'
-param databaseSku string = 'Basic'
-param stagingDatabaseSku string = 'Basic'
 
-param sqlAdminGroupName string
-param sqlAdminGroupId string
+param logAnalyticsWorkspaceId string
 
 var deploymentSlotName = 'staging'
 var databaseName = 'Movies'
 var stagingDatabaseName = '${databaseName}Staging'
 var suffix = substring(uniqueString(resourceGroup().id), 0, 8)
-var logAnalyticsWorkspaceName = 'log-${suffix}'
 var appServicePlanName = 'plan-${suffix}'
 var webAppName = 'web-${suffix}'
-var sqlServerName = 'sql-${suffix}'
+var databaseServerName = 'db-${suffix}'
 var containerRegistryName = 'registry0${suffix}'
 var acrPull = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
-
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
-  name: logAnalyticsWorkspaceName
-  location: location
-}
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: appServicePlanName
@@ -54,7 +45,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
     properties: {
       appSettingNames: [
         'APPLICATIONINSIGHTS_CONNECTION_STRING'
-        'AZURE_SQL_CONNECTIONSTRING'
+        'AZURE_POSTGRESQL_CONNECTIONSTRING'
       ]
       azureStorageConfigNames: []
       connectionStringNames: []
@@ -66,7 +57,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
     properties: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
       ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-      AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${databaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity;'
+      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${databaseName};SslMode=Require;User Id=aad_${databaseName}'
       XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
     }
   }
@@ -93,7 +84,7 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2024-04-01' = {
     properties: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: stagingApplicationInsights.properties.ConnectionString
       ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-      AZURE_SQL_CONNECTIONSTRING: 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${stagingDatabaseName};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=ActiveDirectoryManagedIdentity;'
+      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${stagingDatabaseName};SslMode=Require;User Id=aad_${stagingDatabaseName}'
       XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
     }
   }
@@ -105,7 +96,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspace.id
+    WorkspaceResourceId: logAnalyticsWorkspaceId
   }
 }
 
@@ -115,51 +106,66 @@ resource stagingApplicationInsights 'Microsoft.Insights/components@2020-02-02' =
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspace.id
+    WorkspaceResourceId: logAnalyticsWorkspaceId
   }
 }
 
-resource sqlServer 'Microsoft.Sql/servers@2024-05-01-preview' = {
-  name: sqlServerName
+resource postgresqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
+  name: databaseServerName
   location: location
+  sku: {
+    name: 'Standard_B1ms'
+    tier: 'Burstable'
+  }
   identity: {
     type: 'SystemAssigned'
   }
   properties: {
-    administrators: {
-      administratorType: 'ActiveDirectory'
-      azureADOnlyAuthentication: true
-      login: sqlAdminGroupName
-      principalType: 'Group'
-      sid: sqlAdminGroupId
+    createMode: 'Default'
+    version: '17'
+    storage: {
+      storageSizeGB: 32
+    }
+    network: {
+      publicNetworkAccess: 'Enabled'
+    }
+    authConfig: {
+      activeDirectoryAuth: 'Enabled'
+      passwordAuth: 'Disabled'
+      tenantId: tenant().tenantId
     }
   }
+}
 
-  resource azureServices 'firewallRules' = {
-    name: 'AllowAllWindowsAzureIps'
-    properties: {
-      startIpAddress: '0.0.0.0'
-      endIpAddress: '0.0.0.0'
-    }
+resource postgresqlAdministrators 'Microsoft.DBforPostgreSQL/flexibleServers/administrators@2024-08-01' = {
+  parent: postgresqlServer
+  name: deployer().objectId
+  properties: {
+    tenantId: tenant().tenantId
+    principalName: deployer().userPrincipalName
+    principalType: 'Group'
   }
+}
 
-  resource database 'databases' = {
-    name: databaseName
-    location: location
-    sku: {
-      name: databaseSku
-    }
-    properties: {}
+resource postgresqlFirewallRules 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2024-08-01' = {
+  parent: postgresqlServer
+  name: 'AllowAllAzureServicesAndResourcesWithinAzureIps'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
   }
+}
 
-  resource stagingDatabase 'databases' = {
-    name: stagingDatabaseName
-    location: location
-    sku: {
-      name: stagingDatabaseSku
-    }
-    properties: {}
-  }
+resource database 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2024-08-01' = {
+  parent: postgresqlServer
+  name: databaseName
+  properties: {}
+}
+
+resource stagingDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2024-08-01' = {
+  parent: postgresqlServer
+  name: stagingDatabaseName
+  properties: {}
 }
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' = {
