@@ -129,7 +129,7 @@ jobs:
         with:
           inlineScript: |
             RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
-            DATABASE_USER="$(az ad signed-in-user show --query displayName --output tsv)"
+            DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
             WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
@@ -193,7 +193,7 @@ jobs:
         with:
           inlineScript: |
             RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
-            DATABASE_USER="$(az ad signed-in-user show --query displayName --output tsv)"
+            DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
             WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"

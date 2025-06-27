@@ -90,9 +90,9 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    ```bash
    SUBSCRIPTION=$(az account show --query id --output tsv)
    RESOURCE_GROUP="GitHubDemo"
-   APP_REGISTRATION_DISPLAY_NAME="..."
-   GITHUB_ORGANIZATION="..."
-   REPOSITORY="..."
+   GITHUB_ORGANIZATION="ondfisk"
+   REPOSITORY="GitHubDemo"
+   APP_REGISTRATION_DISPLAY_NAME="$GITHUB_ORGANIZATION-$REPOSITORY"
    ```
 
 1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_:
@@ -116,6 +116,7 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    gh secret set AZURE_TENANT_ID --body "$TENANT"
    gh secret set AZURE_SUBSCRIPTION_ID --body "$SUBSCRIPTION"
    gh secret set AZURE_CLIENT_ID --body "$CLIENT_ID"
+   gh secret set AZURE_CLIENT_DISPLAY_NAME --body "$APP_REGISTRATION_DISPLAY_NAME"
    ```
 
 1. Push the changes to trigger the _infrastructure_ workflow.
