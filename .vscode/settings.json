@@ -8,12 +8,6 @@
   "[github-actions-workflow]": {
     "editor.tabSize": 2
   },
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
   "cSpell.words": [
     "appsettings",
     "aspnet",
@@ -35,9 +29,9 @@
     "dotnettools",
     "Entityframework",
     "Entra",
-    "esbenp",
     "githubdemo",
     "healthz",
+    "humao",
     "jlaundry",
     "Lumet",
     "Npgsql",
