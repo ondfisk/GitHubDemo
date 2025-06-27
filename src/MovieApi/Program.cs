@@ -6,7 +6,11 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default"), options =>
+    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+}
+else
+{
+    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("AZURE_POSTGRESQL_CONNECTIONSTRING"), options =>
     {
         options.ConfigureDataSource(builder =>
         {
@@ -21,10 +25,6 @@ if (builder.Environment.IsDevelopment())
             );
         });
     }));
-}
-else
-{
-    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("AZURE_POSTGRESQL_CONNECTIONSTRING")));
 }
 
 if (Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING") is not null)
