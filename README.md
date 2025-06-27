@@ -16,34 +16,38 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
 1. Create and export development certificate from Windows:
 
-   ```cmd
-   dotnet dev-certs https -ep %USERPROFILE%\.aspnet\https\aspnetapp.pfx --password "<YourStrong@Passw0rd>"
+   ```pwsh
+   New-Item $env:USERPROFILE/.aspnet/https -ItemType Directory -Force
+   dotnet dev-certs https -ep $env:USERPROFILE/.aspnet/https/aspnetapp.pfx --password "<YourStrong@Passw0rd>"
    dotnet dev-certs https --trust
    ```
 
-1. Copy development certificate to WSL\_
+1. Copy development certificate to WSL:
 
    ```bash
-    cp /mnt/c/Users/[Windows-Username]/.aspnet/https/aspnetapp.pfx ~/.aspnet/https
+   sudo cp /mnt/c/Users/[Windows-Username]/.aspnet/https/aspnetapp.pfx ~/.aspnet/https
    ```
 
 1. Fork the repository.
 1. Clone repository to WSL and open in Visual Studio Code.
 1. Open in _Dev Container_.
-1. Configure database:
+1. Run locally:
 
    ```bash
-   # Set development connection string:
-   dotnet user-secrets set "ConnectionStrings:Default" "Data Source=localhost,5432;Database=postgres;User ID=postgres;Password=postgres" --project src/MovieApi/
-
-   # Update database:
-   dotnet ef database update --project src/MovieApi/
+   # Update packages
+   dotnet outdated --upgrade
 
    # Restore
    dotnet restore
 
    # Build
    dotnet build
+
+   # Set development connection string:
+   dotnet user-secrets set "ConnectionStrings:Default" "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=postgres" --project src/MovieApi/
+
+   # Update database:
+   dotnet ef database update --project src/MovieApi/
 
    # Test
    dotnet test
@@ -106,7 +110,7 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    az ad app federated-credential create --id $CLIENT_ID --parameters "{ \"name\": \"$GITHUB_ORGANIZATION-$REPOSITORY-Environment-Production\", \"description\": \"Deploy to production environment\", \"issuer\": \"https://token.actions.githubusercontent.com\", \"subject\": \"repo:$GITHUB_ORGANIZATION/$REPOSITORY:environment:Production\", \"audiences\": [ \"api://AzureADTokenExchange\" ] }"
    ```
 
-1. Create SQL admin group:
+1. Create database administrators group:
 
    ```bash
    GROUP_ID=$(az ad group create --display-name "$GROUP_DISPLAY_NAME" --mail-nickname "$GROUP_MAIL_NICKNAME" --query id --output tsv)
@@ -143,17 +147,15 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
    ```bash
    WEB_APP=$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
-   SQL_SERVER=$(az sql server list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
+   DATABASE_SERVER=$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
    SLOT="staging"
    DATABASE="Movies"
    STAGING_DATABASE="MoviesStaging"
 
-   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEB_APP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $STAGING_DATABASE --system-identity --client-type dotnet --connection $STAGING_DATABASE --new --opt-out configinfo
+   az webapp connection create postgres-flexible --resource-group $RESOURCE_GROUP --name $WEB_APP --target-resource-group $RESOURCE_GROUP --server $DATABASE_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE --new --opt-out configinfo
 
-   az webapp connection create sql --resource-group $RESOURCE_GROUP --name $WEB_APP --target-resource-group $RESOURCE_GROUP --server $SQL_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE --new --opt-out configinfo
+   az webapp connection create postgres-flexible --resource-group $RESOURCE_GROUP --name $WEB_APP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $DATABASE_SERVER --database $STAGING_DATABASE --system-identity --client-type dotnet --connection $STAGING_DATABASE --new --opt-out configinfo
    ```
-
-   **Note**: When asked _Do you want to set current user as Entra admin?:_, answer `n`.
 
 1. Set repository variables:
 
@@ -183,4 +185,6 @@ To lint repository locally run (from WSL):
 docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_GIT_COMMITLINT=false -e VALIDATE_JSCPD=false -e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=false -e VALIDATE_DOTNET_SLN_FORMAT_STYLE=false -e FIX_JSON=true -e FIX_JSON_PRETTIER=true -e FIX_MARKDOWN=true -e FIX_MARKDOWN_PRETTIER=true -e FIX_YAML_PRETTIER=true -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
 ```
 
-You can find the Azure DevOps version [here](https://dev.azure.com/ondfisk/AzureDevOpsDemo).
+## Links
+
+- [Azure DevOps version](https://dev.azure.com/ondfisk/AzureDevOpsDemo).
