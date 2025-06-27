@@ -129,14 +129,13 @@ jobs:
         with:
           inlineScript: |
             RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
-            USER="$(az ad sp show --id "${{ secrets.AZURE_CLIENT_ID }}" --query objectId --output tsv)"
             WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
             POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
             DATABASE="Movies"
             PASSWORD="$(az account get-access-token --resource-type oss-rdbms --query accessToken --output tsv)"
-            CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='$USER' password='$PASSWORD' sslmode=require"
+            CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='84abbc7f-a9dd-4952-8cb2-14c04fdac4ff' password='$PASSWORD' sslmode=require"
 
             echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
             echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
