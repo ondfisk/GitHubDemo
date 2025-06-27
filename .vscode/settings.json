@@ -42,6 +42,7 @@
     "passwordless",
     "psql",
     "pwsh",
+    "rdbms",
     "resourcegroup",
     "serverfarms",
     "serviceconnector",
