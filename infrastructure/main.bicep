@@ -1,8 +1,6 @@
 param location string = resourceGroup().location
 param appServicePlanSku string = 'P0v3'
 
-param databaseAdminGroupName string
-param databaseAdminGroupId string
 param logAnalyticsWorkspaceId string
 
 var deploymentSlotName = 'staging'
@@ -59,7 +57,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
     properties: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
       ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${databaseName};SslMode=Require;User Id=aad_Movies'
+      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${databaseName};SslMode=Require;User Id=aad_${databaseName}'
       XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
     }
   }
@@ -86,7 +84,7 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2024-04-01' = {
     properties: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: stagingApplicationInsights.properties.ConnectionString
       ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${stagingDatabaseName};SslMode=Require;User Id=aad_MoviesStaging'
+      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${stagingDatabaseName};SslMode=Require;User Id=aad_${stagingDatabaseName}'
       XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
     }
   }
@@ -141,10 +139,10 @@ resource postgresqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01'
 
 resource postgresqlAdministrators 'Microsoft.DBforPostgreSQL/flexibleServers/administrators@2024-08-01' = {
   parent: postgresqlServer
-  name: databaseAdminGroupId
+  name: deployer().objectId
   properties: {
     tenantId: tenant().tenantId
-    principalName: databaseAdminGroupName
+    principalName: deployer().userPrincipalName
     principalType: 'Group'
   }
 }

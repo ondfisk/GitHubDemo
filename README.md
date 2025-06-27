@@ -93,8 +93,6 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    APP_REGISTRATION_DISPLAY_NAME="..."
    GITHUB_ORGANIZATION="..."
    REPOSITORY="..."
-   GROUP_DISPLAY_NAME="GitHub Demo Movie Database Admins"
-   GROUP_MAIL_NICKNAME="github-demo-movie-database-admins"
    ```
 
 1. Create a _Microsoft Entra application (SPN)_ and connect it to _GitHub_:
@@ -108,27 +106,6 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    az ad app federated-credential create --id $CLIENT_ID --parameters "{ \"name\": \"$GITHUB_ORGANIZATION-$REPOSITORY-Environment-Staging\", \"issuer\": \"https://token.actions.githubusercontent.com\", \"subject\": \"repo:$GITHUB_ORGANIZATION/$REPOSITORY:environment:Staging\", \"description\": \"Deploy to staging environment\", \"audiences\": [ \"api://AzureADTokenExchange\" ] }"
 
    az ad app federated-credential create --id $CLIENT_ID --parameters "{ \"name\": \"$GITHUB_ORGANIZATION-$REPOSITORY-Environment-Production\", \"description\": \"Deploy to production environment\", \"issuer\": \"https://token.actions.githubusercontent.com\", \"subject\": \"repo:$GITHUB_ORGANIZATION/$REPOSITORY:environment:Production\", \"audiences\": [ \"api://AzureADTokenExchange\" ] }"
-   ```
-
-1. Create database administrators group:
-
-   ```bash
-   GROUP_ID=$(az ad group create --display-name "$GROUP_DISPLAY_NAME" --mail-nickname "$GROUP_MAIL_NICKNAME" --query id --output tsv)
-   ```
-
-1. Update [`/infrastructure/main.bicepparam`](/infrastructure/main.bicepparam).
-
-1. Add yourself to the group:
-
-   ```bash
-   ME=$(az ad signed-in-user show --query id --output tsv)
-   az ad group member add --group $GROUP_ID --member-id $ME
-   ```
-
-1. Add the _SPN_ to the group:
-
-   ```bash
-   az ad group member add --group $GROUP_ID --member-id $OBJECT_ID
    ```
 
 1. Set repository secrets:
@@ -157,23 +134,12 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    az webapp connection create postgres-flexible --resource-group $RESOURCE_GROUP --name $WEB_APP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $DATABASE_SERVER --database $STAGING_DATABASE --system-identity --client-type dotnet --connection $STAGING_DATABASE --new --opt-out configinfo
    ```
 
-1. Set repository variables:
-
-   ```bash
-   CONTAINER_REGISTRY=$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
-
-   gh variable set RESOURCE_GROUP --body "$RESOURCE_GROUP"
-   gh variable set WEB_APP --body "$WEB_APP"
-   gh variable set CONTAINER_REGISTRY --body "$CONTAINER_REGISTRY"
-   ```
-
 1. Run the _application_ workflow from GitHub.
 
 ## Clean up
 
 ```bash
 az group delete --name $RESOURCE_GROUP
-az ad group delete --group $GROUP_ID
 az ad app delete --id $CLIENT_ID
 ```
 
