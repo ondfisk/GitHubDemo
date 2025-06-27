@@ -56,14 +56,7 @@ jobs:
         run: dotnet build --no-restore --configuration ${{ env.CONFIGURATION }}
 
       - name: .NET Test
-        run: dotnet test --no-build --configuration ${{ env.CONFIGURATION }} --logger:"xunit;LogFilePath=TestResult.xml"
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2.19.0
-        if: always()
-        with:
-          files: |
-            **/TestResult.xml
+        run: dotnet test --no-build --configuration ${{ env.CONFIGURATION }}
 
       - name: Build Container Image
         run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags=${{ github.sha }}
@@ -143,7 +136,7 @@ jobs:
             POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
             DATABASE="Movies"
             PASSWORD="$(az account get-access-token --resource https://ossrdbms-aad.database.windows.net --query accessToken --output tsv)"
-            CONNECTION_STRING="host=$POSTGRESQL_SERVER_HOST port=5432 dbname=$DATABASE user='$USER' password='$PASSWORD' sslmode=require"
+            CONNECTION_STRING="host=$POSTGRESQL_SERVER_HOST port=5432 dbname=$DATABASE user=$USER sslmode=require"
 
             echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
             echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
