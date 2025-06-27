@@ -1,14 +1,26 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.AddScoped<IMovieService, MovieService>();
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default"), options =>
+    {
+        options.ConfigureDataSource(builder =>
+        {
+            builder.UsePeriodicPasswordProvider(async (_, cancellationToken) =>
+                {
+                    var credentials = new DefaultAzureCredential();
+                    var accessToken = await credentials.GetTokenAsync(new TokenRequestContext(["https://ossrdbms-aad.database.windows.net/.default"]), cancellationToken);
+                    return accessToken.Token;
+                },
+                TimeSpan.FromHours(23),
+                TimeSpan.FromSeconds(10)
+            );
+        });
+    }));
 }
 else
 {
@@ -22,7 +34,6 @@ if (Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING") 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
