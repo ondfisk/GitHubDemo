@@ -1,6 +1,5 @@
 param location string = resourceGroup().location
 param appServicePlanSku string = 'P0v3'
-
 param logAnalyticsWorkspaceId string
 
 var deploymentSlotName = 'staging'
@@ -134,16 +133,6 @@ resource postgresqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01'
       passwordAuth: 'Disabled'
       tenantId: tenant().tenantId
     }
-  }
-}
-
-resource postgresqlAdministrators 'Microsoft.DBforPostgreSQL/flexibleServers/administrators@2024-08-01' = {
-  parent: postgresqlServer
-  name: deployer().objectId
-  properties: {
-    tenantId: tenant().tenantId
-    principalName: deployer().userPrincipalName
-    principalType: 'Group'
   }
 }
 

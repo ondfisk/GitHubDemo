@@ -121,11 +121,18 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
 1. Push the changes to trigger the _infrastructure_ workflow.
 
+1. Grant _SPN_ access to PostgreSQL server:
+
+   ```bash
+   DATABASE_SERVER=$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
+
+   az postgres flexible-server microsoft-entra-admin create --display-name "$APP_REGISTRATION_DISPLAY_NAME" --object-id $OBJECT_ID --resource-group $RESOURCE_GROUP --server-name $DATABASE_SERVER --type ServicePrincipal
+   ```
+
 1. Grant web app permission to database:
 
    ```bash
    WEB_APP=$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
-   DATABASE_SERVER=$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [].name --output tsv)
    SLOT="staging"
    DATABASE="Movies"
    STAGING_DATABASE="MoviesStaging"

@@ -19,8 +19,7 @@ name: Application
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: application-and-infrastructure-${{ github.ref }}
 
 permissions: {}
 
