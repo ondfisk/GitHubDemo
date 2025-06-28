@@ -1,3 +1,5 @@
+using Npgsql;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
@@ -10,21 +12,22 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("AZURE_POSTGRESQL_CONNECTIONSTRING"), options =>
+    var dataSourceBuilder = new NpgsqlDataSourceBuilder(Environment.GetEnvironmentVariable("AZURE_POSTGRESQL_CONNECTIONSTRING"));
+    if (string.IsNullOrWhiteSpace(dataSourceBuilder.ConnectionStringBuilder.Password))
     {
-        options.ConfigureDataSource(builder =>
-        {
-            builder.UsePeriodicPasswordProvider(async (_, cancellationToken) =>
-                {
-                    var credentials = new DefaultAzureCredential();
-                    var accessToken = await credentials.GetTokenAsync(new TokenRequestContext(["https://ossrdbms-aad.database.windows.net/.default"]), cancellationToken);
-                    return accessToken.Token;
-                },
-                TimeSpan.FromHours(23),
-                TimeSpan.FromSeconds(10)
-            );
-        });
-    }));
+        var credentials = new DefaultAzureCredential();
+        dataSourceBuilder.UsePeriodicPasswordProvider(
+            async (_, cancellationToken) =>
+            {
+                var accessToken = await credentials.GetTokenAsync(new TokenRequestContext(["https://ossrdbms-aad.database.windows.net/.default"]), cancellationToken);
+                return accessToken.Token;
+            },
+            TimeSpan.FromHours(23),
+            TimeSpan.FromSeconds(10)
+        );
+    }
+    var dataSource = dataSourceBuilder.Build();
+    builder.Services.AddDbContext<MovieDbContext>(options => options.UseNpgsql(dataSource));
 }
 
 if (Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING") is not null)
