@@ -57,7 +57,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
     properties: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
       ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${databaseName};SslMode=Require;User Id=aad_${databaseName}'
+      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${databaseName};Ssl Mode=Require;User Id=aad_${databaseName}'
       XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
     }
   }
@@ -84,7 +84,7 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2024-04-01' = {
     properties: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: stagingApplicationInsights.properties.ConnectionString
       ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${stagingDatabaseName};SslMode=Require;User Id=aad_${stagingDatabaseName}'
+      AZURE_POSTGRESQL_CONNECTIONSTRING: 'Server=${postgresqlServer.properties.fullyQualifiedDomainName};Port=5432;Database=${stagingDatabaseName};Ssl Mode=Require;User Id=aad_${stagingDatabaseName};'
       XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
     }
   }
