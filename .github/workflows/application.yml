@@ -52,13 +52,13 @@ jobs:
         run: dotnet restore
 
       - name: .NET Build
-        run: dotnet build --no-restore --configuration ${{ env.CONFIGURATION }}
+        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
 
       - name: .NET Test
-        run: dotnet test --no-build --configuration ${{ env.CONFIGURATION }}
+        run: dotnet run --project tests/MovieApi.Tests --configuration ${{ env.CONFIGURATION }} --no-build
 
       - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --no-restore --configuration ${{ env.CONFIGURATION }} /t:PublishContainer -p ContainerImageTags=${{ github.sha }}
+        run: dotnet publish src/MovieApi/ --configuration ${{ env.CONFIGURATION }} --no-restore /t:PublishContainer -p ContainerImageTags=${{ github.sha }}
 
       - name: Azure Login
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
