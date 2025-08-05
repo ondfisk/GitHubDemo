@@ -150,7 +150,7 @@ jobs:
           plsql-file: migrate.sql
 
       - name: Deploy Web App Container
-        uses: azure/webapps-deploy@v3.0.2
+        uses: azure/webapps-deploy@v3.0.6
         with:
           app-name: ${{ env.WEBAPP }}
           slot-name: staging
