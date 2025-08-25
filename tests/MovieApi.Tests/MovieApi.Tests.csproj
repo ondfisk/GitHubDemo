@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityframeworkCore.Sqlite" Version="9.0.6" />
+    <PackageReference Include="Microsoft.EntityframeworkCore.Sqlite" Version="9.0.8" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Testcontainers.PostgreSql" Version="4.6.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4">
