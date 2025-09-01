@@ -54,13 +54,15 @@ jobs:
         run: dotnet restore
 
       - name: .NET Build
-        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
+        run: dotnet build --configuration $CONFIGURATION --no-restore
 
       - name: .NET Test
-        run: dotnet run --project tests/MovieApi.Tests --configuration ${{ env.CONFIGURATION }} --no-build
+        run: dotnet run --project tests/MovieApi.Tests --configuration $CONFIGURATION --no-build
 
       - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --configuration ${{ env.CONFIGURATION }} --no-restore /t:PublishContainer -p ContainerImageTags=${{ github.sha }}
+        run: dotnet publish src/MovieApi/ --configuration $CONFIGURATION --no-restore /t:PublishContainer -p ContainerImageTags=$GITHUB_SHA
+        env:
+          GITHUB_SHA: ${{ github.sha }}
 
       - name: Azure Login
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
@@ -73,13 +75,14 @@ jobs:
       - name: Push Image to Azure Container Registry
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
         run: |
-          CONTAINER_REGISTRY="$(az acr list --resource-group ${{ env.RESOURCE_GROUP }} --query [].name --output tsv)"
+          CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
           az acr login --name "$CONTAINER_REGISTRY"
           IMAGE="$CONTAINER_REGISTRY.azurecr.io/ondfisk-githubdemo"
-          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ github.sha }}"
-          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ env.IMAGE_TAG }}"
+          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:$GITHUB_SHA"
+          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:$IMAGE_TAG"
           docker push "$IMAGE" --all-tags
         env:
+          GITHUB_SHA: ${{ github.sha }}
           IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
 
       - name: Install Entity Framework Core tools
@@ -129,7 +132,7 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
+            RESOURCE_GROUP=$RESOURCE_GROUP
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
             WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
@@ -156,7 +159,9 @@ jobs:
         with:
           app-name: ${{ env.WEBAPP }}
           slot-name: staging
-          images: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ github.sha }}
+          images: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:$GITHUB_SHA
+        env:
+          GITHUB_SHA: ${{ github.sha }}
 
   production:
     name: Deploy to Production
@@ -193,7 +198,7 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
+            RESOURCE_GROUP=$RESOURCE_GROUP
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
             WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
@@ -219,4 +224,4 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az webapp deployment slot swap --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.WEBAPP }} --slot staging
+            az webapp deployment slot swap --resource-group $RESOURCE_GROUP --name $WEBAPP --slot staging

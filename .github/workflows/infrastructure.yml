@@ -87,7 +87,7 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}"
+            az group create --name "$RESOURCE_GROUP" --location "$LOCATION"
 
       - name: Validate ARM Deployment
         uses: azure/arm-deploy@v2
@@ -137,7 +137,7 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az group create --name "${{ env.RESOURCE_GROUP }}" --location "${{ env.LOCATION }}"
+            az group create --name "$RESOURCE_GROUP" --location "$LOCATION"
 
       - name: Deploy Resources
         id: deploy
