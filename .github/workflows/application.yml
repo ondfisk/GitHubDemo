@@ -54,13 +54,13 @@ jobs:
         run: dotnet restore
 
       - name: .NET Build
-        run: dotnet build --configuration $CONFIGURATION --no-restore
+        run: dotnet build --configuration "$CONFIGURATION" --no-restore
 
       - name: .NET Test
-        run: dotnet run --project tests/MovieApi.Tests --configuration $CONFIGURATION --no-build
+        run: dotnet run --project tests/MovieApi.Tests --configuration "$CONFIGURATION" --no-build
 
       - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --configuration $CONFIGURATION --no-restore /t:PublishContainer -p ContainerImageTags=$GITHUB_SHA
+        run: dotnet publish src/MovieApi/ --configuration "$CONFIGURATION" --no-restore /t:PublishContainer -p ContainerImageTags="$GITHUB_SHA"
         env:
           GITHUB_SHA: ${{ github.sha }}
 
@@ -75,7 +75,7 @@ jobs:
       - name: Push Image to Azure Container Registry
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
         run: |
-          CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
+          CONTAINER_REGISTRY=$(az acr list --resource-group "$RESOURCE_GROUP" --query [].name --output tsv)
           az acr login --name "$CONTAINER_REGISTRY"
           IMAGE="$CONTAINER_REGISTRY.azurecr.io/ondfisk-githubdemo"
           docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:$GITHUB_SHA"
