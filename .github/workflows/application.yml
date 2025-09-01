@@ -42,6 +42,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4.3.1
@@ -52,13 +54,15 @@ jobs:
         run: dotnet restore
 
       - name: .NET Build
-        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
+        run: dotnet build --configuration "$CONFIGURATION" --no-restore
 
       - name: .NET Test
-        run: dotnet run --project tests/MovieApi.Tests --configuration ${{ env.CONFIGURATION }} --no-build
+        run: dotnet run --project tests/MovieApi.Tests --configuration "$CONFIGURATION" --no-build
 
       - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --configuration ${{ env.CONFIGURATION }} --no-restore /t:PublishContainer -p ContainerImageTags=${{ github.sha }}
+        run: dotnet publish src/MovieApi/ --configuration "$CONFIGURATION" --no-restore /t:PublishContainer -p ContainerImageTags="$GITHUB_SHA"
+        env:
+          GITHUB_SHA: ${{ github.sha }}
 
       - name: Azure Login
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
@@ -71,13 +75,14 @@ jobs:
       - name: Push Image to Azure Container Registry
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
         run: |
-          CONTAINER_REGISTRY="$(az acr list --resource-group ${{ env.RESOURCE_GROUP }} --query [].name --output tsv)"
+          CONTAINER_REGISTRY=$(az acr list --resource-group "$RESOURCE_GROUP" --query [].name --output tsv)
           az acr login --name "$CONTAINER_REGISTRY"
           IMAGE="$CONTAINER_REGISTRY.azurecr.io/ondfisk-githubdemo"
-          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ github.sha }}"
-          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ env.IMAGE_TAG }}"
+          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:$GITHUB_SHA"
+          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:$IMAGE_TAG"
           docker push "$IMAGE" --all-tags
         env:
+          GITHUB_SHA: ${{ github.sha }}
           IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
 
       - name: Install Entity Framework Core tools
@@ -127,12 +132,11 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
-            WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
-            CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
-            POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
-            POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
+            WEBAPP="$(az webapp list --resource-group "$RESOURCE_GROUP" --query [].name --output tsv)"
+            CONTAINER_REGISTRY="$(az acr list --resource-group "$RESOURCE_GROUP" --query [].name --output tsv)"
+            POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group "$RESOURCE_GROUP" --query [0].name --output tsv)"
+            POSTGRESQL_SERVER_HOST=$(az postgres flexible-server show --resource-group "$RESOURCE_GROUP" --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)
             DATABASE="MoviesStaging"
             PASSWORD="$(az account get-access-token --resource-type oss-rdbms --query accessToken --output tsv)"
             CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='$DATABASE_USER' password='$PASSWORD' sslmode=require options='--client_min_messages=WARNING'"
@@ -154,7 +158,9 @@ jobs:
         with:
           app-name: ${{ env.WEBAPP }}
           slot-name: staging
-          images: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ github.sha }}
+          images: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:$GITHUB_SHA
+        env:
+          GITHUB_SHA: ${{ github.sha }}
 
   production:
     name: Deploy to Production
@@ -165,8 +171,6 @@ jobs:
 
     env:
       RESOURCE_GROUP: GitHubDemo
-      WEBAPP: ""
-      CONTAINER_REGISTRY: ""
       POSTGRESQL_SERVER: ""
       CONNECTION_STRING: ""
 
@@ -191,10 +195,8 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
             WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
-            CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
             POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
             DATABASE="Movies"
@@ -202,7 +204,6 @@ jobs:
             CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='$DATABASE_USER' password='$PASSWORD' sslmode=require options='--client_min_messages=WARNING'"
 
             echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
-            echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
             echo "POSTGRESQL_SERVER=$POSTGRESQL_SERVER" >> "$GITHUB_ENV"
             echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
 
@@ -217,4 +218,4 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az webapp deployment slot swap --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.WEBAPP }} --slot staging
+            az webapp deployment slot swap --resource-group "$RESOURCE_GROUP" --name "$WEBAPP" --slot staging
