@@ -32,8 +32,8 @@ jobs:
         uses: super-linter/super-linter@v8.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_JSCPD: false
           VALIDATE_GIT_COMMITLINT: false
+          # VALIDATE_JSCPD: false
           FIX_GITHUB_ACTIONS_ZIZMOR: true
           FIX_JSON: true
           FIX_JSON_PRETTIER: true

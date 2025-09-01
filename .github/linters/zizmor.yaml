@@ -3,6 +3,6 @@ rules:
   unpinned-uses:
     config:
       policies:
-        github/*: ref-pin
+        actions/*: ref-pin
         azure/*: ref-pin
         super-linter/super-linter: ref-pin
