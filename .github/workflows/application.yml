@@ -27,11 +27,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    environment: Staging
 
     env:
       CONFIGURATION: Release
-      RESOURCE_GROUP: GitHubDemo
 
     permissions:
       contents: read
@@ -42,6 +40,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4.3.1
@@ -52,33 +52,10 @@ jobs:
         run: dotnet restore
 
       - name: .NET Build
-        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
+        run: dotnet build --configuration "$CONFIGURATION" --no-restore
 
       - name: .NET Test
-        run: dotnet run --project tests/MovieApi.Tests --configuration ${{ env.CONFIGURATION }} --no-build
-
-      - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --configuration ${{ env.CONFIGURATION }} --no-restore /t:PublishContainer -p ContainerImageTags=${{ github.sha }}
-
-      - name: Azure Login
-        if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
-        uses: azure/login@v2.3.0
-        with:
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Push Image to Azure Container Registry
-        if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
-        run: |
-          CONTAINER_REGISTRY="$(az acr list --resource-group ${{ env.RESOURCE_GROUP }} --query [].name --output tsv)"
-          az acr login --name "$CONTAINER_REGISTRY"
-          IMAGE="$CONTAINER_REGISTRY.azurecr.io/ondfisk-githubdemo"
-          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ github.sha }}"
-          docker tag "ondfisk-githubdemo:${{ github.sha }}" "$IMAGE:${{ env.IMAGE_TAG }}"
-          docker push "$IMAGE" --all-tags
-        env:
-          IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
+        run: dotnet run --project tests/MovieApi.Tests --configuration "$CONFIGURATION" --no-build
 
       - name: Install Entity Framework Core tools
         run: dotnet tool install dotnet-ef --global
@@ -97,9 +74,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment: Staging
-    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    if: (github.ref == 'refs/heads/main' || github.event_name == 'pull_request') && github.triggering_actor != 'dependabot[bot]'
 
     env:
+      CONFIGURATION: Release
       RESOURCE_GROUP: GitHubDemo
       WEBAPP: ""
       CONTAINER_REGISTRY: ""
@@ -110,6 +88,27 @@ jobs:
       id-token: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.3.1
+        with:
+          dotnet-version: 9.0.x
+
+      - name: .NET Restore
+        run: dotnet restore
+
+      - name: .NET Build
+        run: dotnet build --configuration "$CONFIGURATION" --no-restore
+
+      - name: Build Container Image
+        run: dotnet publish src/MovieApi/ --configuration "$CONFIGURATION" --no-build /t:PublishContainer -p ContainerImageTags="$GITHUB_SHA"
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+
       - name: Download database migrations script
         uses: actions/download-artifact@v5.0.0
         with:
@@ -127,12 +126,11 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
-            WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
-            CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
-            POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
-            POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
+            WEBAPP="$(az webapp list --resource-group "$RESOURCE_GROUP" --query [].name --output tsv)"
+            CONTAINER_REGISTRY="$(az acr list --resource-group "$RESOURCE_GROUP" --query [].name --output tsv)"
+            POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group "$RESOURCE_GROUP" --query [0].name --output tsv)"
+            POSTGRESQL_SERVER_HOST=$(az postgres flexible-server show --resource-group "$RESOURCE_GROUP" --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)
             DATABASE="MoviesStaging"
             PASSWORD="$(az account get-access-token --resource-type oss-rdbms --query accessToken --output tsv)"
             CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='$DATABASE_USER' password='$PASSWORD' sslmode=require options='--client_min_messages=WARNING'"
@@ -165,8 +163,6 @@ jobs:
 
     env:
       RESOURCE_GROUP: GitHubDemo
-      WEBAPP: ""
-      CONTAINER_REGISTRY: ""
       POSTGRESQL_SERVER: ""
       CONNECTION_STRING: ""
 
@@ -191,10 +187,8 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            RESOURCE_GROUP=${{ env.RESOURCE_GROUP }}
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
             WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
-            CONTAINER_REGISTRY="$(az acr list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
             POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
             DATABASE="Movies"
@@ -202,7 +196,6 @@ jobs:
             CONNECTION_STRING="psql host='$POSTGRESQL_SERVER_HOST' port=5432 dbname='$DATABASE' user='$DATABASE_USER' password='$PASSWORD' sslmode=require options='--client_min_messages=WARNING'"
 
             echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
-            echo "CONTAINER_REGISTRY=$CONTAINER_REGISTRY" >> "$GITHUB_ENV"
             echo "POSTGRESQL_SERVER=$POSTGRESQL_SERVER" >> "$GITHUB_ENV"
             echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
 
@@ -217,4 +210,4 @@ jobs:
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
-            az webapp deployment slot swap --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.WEBAPP }} --slot staging
+            az webapp deployment slot swap --resource-group "$RESOURCE_GROUP" --name "$WEBAPP" --slot staging

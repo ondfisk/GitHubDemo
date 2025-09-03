@@ -1,28 +1,15 @@
 param location string = resourceGroup().location
-param appServicePlanSku string = 'P0v3'
+param appServicePlanId string
 param logAnalyticsWorkspaceId string
 
 var deploymentSlotName = 'staging'
 var databaseName = 'Movies'
 var stagingDatabaseName = '${databaseName}Staging'
 var suffix = substring(uniqueString(resourceGroup().id), 0, 8)
-var appServicePlanName = 'plan-${suffix}'
 var webAppName = 'web-${suffix}'
 var databaseServerName = 'db-${suffix}'
 var containerRegistryName = 'registry0${suffix}'
 var acrPull = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
-
-resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
-  name: appServicePlanName
-  location: location
-  kind: 'linux'
-  sku: {
-    name: appServicePlanSku
-  }
-  properties: {
-    reserved: true
-  }
-}
 
 resource webApp 'Microsoft.Web/sites@2024-04-01' = {
   name: webAppName
@@ -32,7 +19,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
     type: 'SystemAssigned'
   }
   properties: {
-    serverFarmId: appServicePlan.id
+    serverFarmId: appServicePlanId
     siteConfig: {
       acrUseManagedIdentityCreds: true
       healthCheckPath: '/healthz'
@@ -71,7 +58,6 @@ resource deploymentSlot 'Microsoft.Web/sites/slots@2024-04-01' = {
     type: 'SystemAssigned'
   }
   properties: {
-    serverFarmId: appServicePlan.id
     siteConfig: {
       acrUseManagedIdentityCreds: true
       healthCheckPath: '/healthz'

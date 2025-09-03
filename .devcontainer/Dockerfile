@@ -5,6 +5,9 @@ USER vscode
 RUN dotnet tool install --global dotnet-ef \
     && dotnet tool install --global dotnet-outdated-tool
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD dotnet --info > /dev/null || exit 1
+
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>

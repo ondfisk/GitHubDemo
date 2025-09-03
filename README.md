@@ -119,6 +119,10 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    gh secret set AZURE_CLIENT_DISPLAY_NAME --body "$APP_REGISTRATION_DISPLAY_NAME"
    ```
 
+1. Create a _Log Analytics Workspace_ and an _App Service Plan_ if needed.
+
+1. Update [infrastructure/main.bicepparam](`infrastructure/main.bicepparam`).
+
 1. Push the changes to trigger the _infrastructure_ workflow.
 
 1. Grant _SPN_ access to PostgreSQL server:
