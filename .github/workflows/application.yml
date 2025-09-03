@@ -48,22 +48,22 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: .NET Restore
+      - name: Restore Packages
         run: dotnet restore
 
-      - name: .NET Build
+      - name: Build
         run: dotnet build --configuration "$CONFIGURATION" --no-restore
 
-      - name: .NET Test
+      - name: Test
         run: dotnet run --project tests/MovieApi.Tests --configuration "$CONFIGURATION" --no-build
 
-      - name: Install Entity Framework Core tools
+      - name: Install Entity Framework Core Tools
         run: dotnet tool install dotnet-ef --global
 
-      - name: Generate database migrations script
+      - name: Generate Database Migrations Script
         run: dotnet ef migrations script --idempotent --project src/MovieApi/ --startup-project src/MovieApi/ --no-build --output migrate.sql
 
-      - name: Upload database migrations script
+      - name: Upload Database Migrations Script
         uses: actions/upload-artifact@v4.6.2
         with:
           name: migrate.sql
@@ -98,13 +98,13 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: .NET Restore
+      - name: Restore Packages
         run: dotnet restore
 
-      - name: .NET Build
+      - name: Build
         run: dotnet build --configuration "$CONFIGURATION" --no-restore
 
-      - name: Build Container Image
+      - name: Publish Container Image
         run: dotnet publish src/MovieApi/ --configuration "$CONFIGURATION" --no-build /t:PublishContainer -p ContainerImageTags="$GITHUB_SHA"
         env:
           GITHUB_SHA: ${{ github.sha }}
@@ -116,7 +116,7 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get variables
+      - name: Get Variables
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
@@ -147,13 +147,13 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
 
-      - name: Download database migrations script
+      - name: Download Database Migrations Script
         uses: actions/download-artifact@v5.0.0
         with:
           name: migrate.sql
           path: .
 
-      - name: Apply database migrations
+      - name: Apply Database Migrations
         uses: azure/postgresql@v1
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
@@ -183,7 +183,7 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download database migrations script
+      - name: Download Database Migrations Script
         uses: actions/download-artifact@v5.0.0
         with:
           name: migrate.sql
@@ -196,7 +196,7 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get variables
+      - name: Get Variables
         uses: azure/cli@v2.1.0
         with:
           inlineScript: |
@@ -212,7 +212,7 @@ jobs:
             echo "POSTGRESQL_SERVER=$POSTGRESQL_SERVER" >> "$GITHUB_ENV"
             echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
 
-      - name: Apply database migrations
+      - name: Apply Database Migrations
         uses: azure/postgresql@v1
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
