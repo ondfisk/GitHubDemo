@@ -109,18 +109,31 @@ jobs:
         env:
           GITHUB_SHA: ${{ github.sha }}
 
-      - name: Download database migrations script
-        uses: actions/download-artifact@v5.0.0
-        with:
-          name: migrate.sql
-          path: .
-
       - name: Azure Login
         uses: azure/login@v2.3.0
         with:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Push Image to Azure Container Registry
+        if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+        run: |
+          CONTAINER_REGISTRY=$(az acr list --resource-group "$RESOURCE_GROUP" --query [].name --output tsv)
+          az acr login --name "$CONTAINER_REGISTRY"
+          IMAGE="$CONTAINER_REGISTRY.azurecr.io/ondfisk-githubdemo"
+          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:GITHUB_SHA"
+          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:GITHUB_SHA"
+          docker push "$IMAGE" --all-tags
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
+
+      - name: Download database migrations script
+        uses: actions/download-artifact@v5.0.0
+        with:
+          name: migrate.sql
+          path: .
 
       - name: Get variables
         uses: azure/cli@v2.1.0
