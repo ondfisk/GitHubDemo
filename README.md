@@ -141,6 +141,8 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    DATABASE="Movies"
    STAGING_DATABASE="MoviesStaging"
 
+   az extension add --name serviceconnector-passwordless
+
    az webapp connection create postgres-flexible --resource-group $RESOURCE_GROUP --name $WEB_APP --target-resource-group $RESOURCE_GROUP --server $DATABASE_SERVER --database $DATABASE --system-identity --client-type dotnet --connection $DATABASE --new --opt-out configinfo
 
    az webapp connection create postgres-flexible --resource-group $RESOURCE_GROUP --name $WEB_APP --slot $SLOT --target-resource-group $RESOURCE_GROUP --server $DATABASE_SERVER --database $STAGING_DATABASE --system-identity --client-type dotnet --connection $STAGING_DATABASE --new --opt-out configinfo
