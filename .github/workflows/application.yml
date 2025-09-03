@@ -139,8 +139,8 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
         run: |
           az acr login --name "$CONTAINER_REGISTRY"
-          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:GITHUB_SHA"
-          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:GITHUB_SHA"
+          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:$GITHUB_SHA"
+          docker tag "ondfisk-githubdemo:$GITHUB_SHA" "$IMAGE:$GITHUB_SHA"
           docker push "$IMAGE" --all-tags
         env:
           GITHUB_SHA: ${{ github.sha }}
