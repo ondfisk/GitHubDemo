@@ -59,11 +59,6 @@ jobs:
       - name: .NET Test
         run: dotnet run --project tests/MovieApi.Tests --configuration "$CONFIGURATION" --no-build
 
-      - name: Build Container Image
-        run: dotnet publish src/MovieApi/ --configuration "$CONFIGURATION" --no-restore /t:PublishContainer -p ContainerImageTags="$GITHUB_SHA"
-        env:
-          GITHUB_SHA: ${{ github.sha }}
-
       - name: Azure Login
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
         uses: azure/login@v2.3.0
@@ -115,6 +110,16 @@ jobs:
       id-token: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Build Container Image
+        run: dotnet publish src/MovieApi/ --configuration "$CONFIGURATION" --no-restore /t:PublishContainer -p ContainerImageTags="$GITHUB_SHA"
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+
       - name: Download database migrations script
         uses: actions/download-artifact@v5.0.0
         with:
@@ -158,9 +163,7 @@ jobs:
         with:
           app-name: ${{ env.WEBAPP }}
           slot-name: staging
-          images: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:$GITHUB_SHA
-        env:
-          GITHUB_SHA: ${{ github.sha }}
+          images: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/ondfisk-githubdemo:${{ github.sha }}
 
   production:
     name: Deploy to Production
