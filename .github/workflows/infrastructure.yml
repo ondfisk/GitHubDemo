@@ -39,14 +39,14 @@ jobs:
           persist-credentials: false
 
       - name: Lint Bicep Files
-        uses: azure/cli@v2.1.0
+        uses: azure/cli@v2.2.0
         with:
           inlineScript: |
             az bicep lint --file infrastructure/main.bicep
             az bicep lint --file infrastructure/main.bicepparam
 
       - name: Build Bicep Files
-        uses: azure/cli@v2.1.0
+        uses: azure/cli@v2.2.0
         with:
           inlineScript: |
             az bicep build --file infrastructure/main.bicep --outfile infrastructure/main.json
@@ -84,7 +84,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group
-        uses: azure/cli@v2.1.0
+        uses: azure/cli@v2.2.0
         with:
           inlineScript: |
             az group create --name "$RESOURCE_GROUP" --location "$LOCATION"
@@ -134,7 +134,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group
-        uses: azure/cli@v2.1.0
+        uses: azure/cli@v2.2.0
         with:
           inlineScript: |
             az group create --name "$RESOURCE_GROUP" --location "$LOCATION"

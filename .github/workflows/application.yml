@@ -117,7 +117,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get Variables
-        uses: azure/cli@v2.1.0
+        uses: azure/cli@v2.2.0
         with:
           inlineScript: |
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
@@ -197,7 +197,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get Variables
-        uses: azure/cli@v2.1.0
+        uses: azure/cli@v2.2.0
         with:
           inlineScript: |
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
@@ -220,7 +220,7 @@ jobs:
           plsql-file: migrate.sql
 
       - name: Swap Staging With Production
-        uses: azure/cli@v2.1.0
+        uses: azure/cli@v2.2.0
         with:
           inlineScript: |
             az webapp deployment slot swap --resource-group "$RESOURCE_GROUP" --name "$WEBAPP" --slot staging
