@@ -162,7 +162,7 @@ az ad app delete --id $CLIENT_ID
 To lint repository locally run (from WSL):
 
 ```bash
-docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_GIT_COMMITLINT=false -e VALIDATE_JSCPD=false -e FIX_JSON=true -e FIX_JSON_PRETTIER=true -e FIX_JSONC=true -e FIX_JSONC_PRETTIER=true -e FIX_MARKDOWN=true -e FIX_MARKDOWN_PRETTIER=true -e FIX_YAML_PRETTIER=true -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
+docker run -e DEFAULT_BRANCH=main -e RUN_LOCAL=true -e VALIDATE_GIT_COMMITLINT=false -e FIX_BIOME_FORMAT=true -e FIX_BIOME_LINT=true -e FIX_CSHARP=true -e FIX_DOTNET_SLN_FORMAT_ANALYZERS=true -e FIX_DOTNET_SLN_FORMAT_STYLE=true -e FIX_DOTNET_SLN_FORMAT_WHITESPACE=true -e FIX_GITHUB_ACTIONS_ZIZMOR=true -e FIX_JSON_PRETTIER=true -e FIX_JSON=true -e FIX_JSONC_PRETTIER=true -e FIX_JSONC=true -e FIX_MARKDOWN_PRETTIER=true -e FIX_MARKDOWN=true -e FIX_NATURAL_LANGUAGE=true -e FIX_YAML_PRETTIER=true -v .:/tmp/lint --rm ghcr.io/super-linter/super-linter:latest
 ```
 
 ## Links
