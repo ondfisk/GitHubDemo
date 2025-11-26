@@ -14,7 +14,9 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
 ## Run locally (in a _Dev Container_)
 
-1. Create and export development certificate from Windows:
+1. Create and export development certificate:
+
+   ### Windows
 
    ```pwsh
    New-Item $env:USERPROFILE/.aspnet/https -ItemType Directory -Force
@@ -22,10 +24,18 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    dotnet dev-certs https --trust
    ```
 
-1. Copy development certificate to WSL:
+   Copy development certificate to WSL:
 
    ```bash
    sudo cp /mnt/c/Users/[Windows-Username]/.aspnet/https/aspnetapp.pfx ~/.aspnet/https
+   ```
+
+   ### macOS
+
+   ```bash
+   mkdir -p ~/.aspnet/https
+   dotnet dev-certs https -ep ~/.aspnet/https/aspnetapp.pfx --password "<YourStrong@Passw0rd>"
+   dotnet dev-certs https --trust
    ```
 
 1. Fork the repository.
@@ -89,9 +99,9 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
    ```bash
    SUBSCRIPTION=$(az account show --query id --output tsv)
-   RESOURCE_GROUP="GitHubDemo"
-   GITHUB_ORGANIZATION="ondfisk"
-   REPOSITORY="GitHubDemo"
+   RESOURCE_GROUP="..."
+   GITHUB_ORGANIZATION="..."
+   REPOSITORY="..."
    APP_REGISTRATION_DISPLAY_NAME="$GITHUB_ORGANIZATION-$REPOSITORY"
    ```
 
