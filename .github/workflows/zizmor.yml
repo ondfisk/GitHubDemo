@@ -1,7 +1,7 @@
 ---
 name: GitHub Actions Security Analysis with zizmor 🌈
 
-on:
+"on":
   push:
     branches:
       - main
