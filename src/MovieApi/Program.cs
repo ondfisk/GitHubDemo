@@ -1,8 +1,5 @@
-using Npgsql;
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.AddScoped<IMovieService, MovieService>();
 

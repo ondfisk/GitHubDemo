@@ -39,14 +39,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5.0.0
+        uses: actions/setup-dotnet@d4c94342e560b34958eacfc5d055d21461ed1c5d # v5.0.0
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - name: Restore Packages
         run: dotnet restore
@@ -64,7 +64,7 @@ jobs:
         run: dotnet ef migrations script --idempotent --project src/MovieApi/ --startup-project src/MovieApi/ --no-build --output migrate.sql
 
       - name: Upload Database Migrations Script
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: migrate.sql
           path: migrate.sql
@@ -89,12 +89,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5.0.0
+        uses: actions/setup-dotnet@d4c94342e560b34958eacfc5d055d21461ed1c5d # v5.0.0
         with:
           dotnet-version: 9.0.x
 
@@ -110,14 +110,14 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
 
       - name: Azure Login
-        uses: azure/login@v2.3.0
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get Variables
-        uses: azure/cli@v2.2.0
+        uses: azure/cli@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
         with:
           inlineScript: |
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
@@ -148,20 +148,20 @@ jobs:
           IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'test' }}
 
       - name: Download Database Migrations Script
-        uses: actions/download-artifact@v6.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: migrate.sql
           path: .
 
       - name: Apply Database Migrations
-        uses: azure/postgresql@v1
+        uses: azure/postgresql@59401b7890419c83f372819a1c37f5aecf57ac92 # v1.2.0
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
           server-name: ${{ env.POSTGRESQL_SERVER }}
           plsql-file: migrate.sql
 
       - name: Deploy Web App Container
-        uses: azure/webapps-deploy@v3.0.6
+        uses: azure/webapps-deploy@657f0700ea5214d56a0400d8ac5e8023c963d25d # v3.0.6
         with:
           app-name: ${{ env.WEBAPP }}
           slot-name: staging
@@ -184,20 +184,20 @@ jobs:
 
     steps:
       - name: Download Database Migrations Script
-        uses: actions/download-artifact@v6.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: migrate.sql
           path: .
 
       - name: Azure Login
-        uses: azure/login@v2.3.0
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get Variables
-        uses: azure/cli@v2.2.0
+        uses: azure/cli@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
         with:
           inlineScript: |
             DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
@@ -213,14 +213,14 @@ jobs:
             echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
 
       - name: Apply Database Migrations
-        uses: azure/postgresql@v1
+        uses: azure/postgresql@59401b7890419c83f372819a1c37f5aecf57ac92 # v1.2.0
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
           server-name: ${{ env.POSTGRESQL_SERVER }}
           plsql-file: migrate.sql
 
       - name: Swap Staging With Production
-        uses: azure/cli@v2.2.0
+        uses: azure/cli@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
         with:
           inlineScript: |
             az webapp deployment slot swap --resource-group "$RESOURCE_GROUP" --name "$WEBAPP" --slot staging
