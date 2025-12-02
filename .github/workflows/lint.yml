@@ -29,23 +29,37 @@ jobs:
           persist-credentials: true
 
       - name: Super-Linter
-        uses: super-linter/super-linter@2bdd90ed3262e023ac84bf8fe35dc480721fc1f2 # v8.2.1
+        uses: super-linter/super-linter@502f4fe48a81a392756e173e39a861f8c8efe056 # v8.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS: false # Not supported for .NET 10 yet
-          VALIDATE_DOTNET_SLN_FORMAT_STYLE: false # Not supported for .NET 10 yet
+          VALIDATE_CSS: false
+          VALIDATE_CSS_PRETTIER: false
           VALIDATE_GIT_COMMITLINT: false
+          VALIDATE_GRAPHQL_PRETTIER: false
+          VALIDATE_HTML: false
+          VALIDATE_HTML_PRETTIER: false
+          VALIDATE_JAVASCRIPT_ES: false
+          VALIDATE_JAVASCRIPT_PRETTIER: false
+          VALIDATE_JSON: false
+          VALIDATE_JSON_PRETTIER: false
+          VALIDATE_JSONC: false
+          VALIDATE_JSONC_PRETTIER: false
+          VALIDATE_JSX: false
+          VALIDATE_JSX_PRETTIER: false
+          VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON_RUFF_FORMAT: false
+          VALIDATE_TSX: false
+          VALIDATE_TYPESCRIPT_ES: false
+          VALIDATE_TYPESCRIPT_PRETTIER: false
+          VALIDATE_VUE: false
+          VALIDATE_VUE_PRETTIER: false
           FIX_BIOME_FORMAT: true
           FIX_BIOME_LINT: true
           FIX_CSHARP: true
-          # FIX_DOTNET_SLN_FORMAT_ANALYZERS: true
-          # FIX_DOTNET_SLN_FORMAT_STYLE: true
+          FIX_DOTNET_SLN_FORMAT_ANALYZERS: true
+          FIX_DOTNET_SLN_FORMAT_STYLE: true
           FIX_DOTNET_SLN_FORMAT_WHITESPACE: true
           FIX_GITHUB_ACTIONS_ZIZMOR: true
-          FIX_JSON_PRETTIER: true
-          FIX_JSON: true
-          FIX_JSONC_PRETTIER: true
-          FIX_JSONC: true
           FIX_MARKDOWN_PRETTIER: true
           FIX_MARKDOWN: true
           FIX_NATURAL_LANGUAGE: true
