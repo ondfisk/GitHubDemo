@@ -9,6 +9,7 @@ name: Application
       - .github/workflows/application.yml
       - src/**
       - tests/**
+
   pull_request:
     branches:
       - main
@@ -16,6 +17,7 @@ name: Application
       - .github/workflows/application.yml
       - src/**
       - tests/**
+
   workflow_dispatch:
 
 concurrency:

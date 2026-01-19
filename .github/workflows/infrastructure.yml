@@ -8,12 +8,14 @@ name: Infrastructure
     paths:
       - .github/workflows/infrastructure.yml
       - infrastructure/**
+
   pull_request:
     branches:
       - main
     paths:
       - .github/workflows/infrastructure.yml
       - infrastructure/**
+
   workflow_dispatch:
 
 concurrency:
