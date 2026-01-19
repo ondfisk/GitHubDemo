@@ -1,3 +1,5 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet-postgres
 {
 	"name": "C# (.NET) and PostgreSQL",
 	"dockerComposeFile": "docker-compose.yml",
@@ -5,16 +7,22 @@
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"features": {
 		"ghcr.io/devcontainers/features/azure-cli:1": {
-			"version": "latest",
 			"installBicep": true,
+			"version": "latest",
+			"bicepVersion": "latest",
 			"extensions": "serviceconnector-passwordless"
 		},
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-		"ghcr.io/devcontainers/features/dotnet:2": {
-			"version": "10.0",
-			"additionalVersions": "8.0, 9.0"
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"moby": true,
+			"installDockerBuildx": true,
+			"installDockerComposeSwitch": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "v2"
 		},
-		"ghcr.io/devcontainers/features/github-cli:1": {}
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"installDirectlyFromGitHubRelease": true,
+			"version": "latest"
+		}
 	},
 	"customizations": {
 		"vscode": {

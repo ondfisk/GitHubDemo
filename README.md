@@ -20,9 +20,6 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 1. Run locally:
 
    ```bash
-   # Update packages
-   dotnet outdated --upgrade
-
    # Restore
    dotnet restore
 

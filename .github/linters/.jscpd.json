@@ -1,6 +1,3 @@
 {
-	"ignore": [
-		"**/.github/workflows/**",
-		"**/Migrations/**"
-	]
+	"ignore": ["**/.github/workflows/**", "**/Migrations/**"]
 }
