@@ -17,7 +17,8 @@ name: Infrastructure
   workflow_dispatch:
 
 concurrency:
-  group: application-and-infrastructure-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions: {}
 
@@ -67,7 +68,7 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write
+      id-token: write # Required for Azure Login
 
     steps:
       - name: Download Artifacts
@@ -117,7 +118,7 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write
+      id-token: write # Required for Azure Login
 
     steps:
       - name: Download Artifacts

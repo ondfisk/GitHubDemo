@@ -40,6 +40,7 @@
 			},
 			"extensions": [
 				"davidanson.vscode-markdownlint",
+				"esbenp.prettier-vscode",
 				"github.vscode-github-actions",
 				"github.vscode-pull-request-github",
 				"humao.rest-client",

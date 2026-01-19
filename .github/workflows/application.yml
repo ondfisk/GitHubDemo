@@ -19,7 +19,8 @@ name: Application
   workflow_dispatch:
 
 concurrency:
-  group: application-and-infrastructure-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions: {}
 
@@ -33,9 +34,6 @@ jobs:
 
     permissions:
       contents: read
-      checks: write
-      id-token: write
-      pull-requests: write
 
     steps:
       - name: Checkout
@@ -84,7 +82,8 @@ jobs:
       CONNECTION_STRING: ""
 
     permissions:
-      id-token: write
+      contents: read
+      id-token: write # Required for Azure Login
 
     steps:
       - name: Checkout
@@ -119,7 +118,6 @@ jobs:
         uses: azure/cli@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
         with:
           inlineScript: |
-            DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
             WEBAPP="$(az webapp list --resource-group "$RESOURCE_GROUP" --query [].name --output tsv)"
             CONTAINER_REGISTRY="$(az acr list --resource-group "$RESOURCE_GROUP" --query [].name --output tsv)"
             IMAGE_NAME="$CONTAINER_REGISTRY.azurecr.io/ondfisk-githubdemo"
@@ -134,6 +132,8 @@ jobs:
             echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_ENV"
             echo "POSTGRESQL_SERVER=$POSTGRESQL_SERVER" >> "$GITHUB_ENV"
             echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
+        env:
+          DATABASE_USER: ${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
 
       - name: Push Image to Azure Container Registry
         if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
@@ -179,7 +179,8 @@ jobs:
       CONNECTION_STRING: ""
 
     permissions:
-      id-token: write
+      contents: read
+      id-token: write # Required for Azure Login
 
     steps:
       - name: Download Database Migrations Script
@@ -199,7 +200,6 @@ jobs:
         uses: azure/cli@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
         with:
           inlineScript: |
-            DATABASE_USER=${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
             WEBAPP="$(az webapp list --resource-group $RESOURCE_GROUP --query [].name --output tsv)"
             POSTGRESQL_SERVER="$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query [0].name --output tsv)"
             POSTGRESQL_SERVER_HOST="$(az postgres flexible-server show --resource-group $RESOURCE_GROUP --name $POSTGRESQL_SERVER --query fullyQualifiedDomainName --output tsv)"
@@ -210,6 +210,8 @@ jobs:
             echo "WEBAPP=$WEBAPP" >> "$GITHUB_ENV"
             echo "POSTGRESQL_SERVER=$POSTGRESQL_SERVER" >> "$GITHUB_ENV"
             echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
+        env:
+          DATABASE_USER: ${{ secrets.AZURE_CLIENT_DISPLAY_NAME }}
 
       - name: Apply Database Migrations
         uses: azure/postgresql@59401b7890419c83f372819a1c37f5aecf57ac92 # v1.2.0
