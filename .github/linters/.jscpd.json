@@ -1,8 +1,6 @@
 {
 	"ignore": [
 		"**/.github/workflows/**",
-		"**/Migrations/**",
-		"**/bin/**",
-		"**/obj/**"
+		"**/Migrations/**"
 	]
 }

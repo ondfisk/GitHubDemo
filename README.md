@@ -14,32 +14,8 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
 
 ## Run locally (in a _Dev Container_)
 
-1. Create and export development certificate:
-
-   ### Windows
-
-   ```pwsh
-   New-Item $env:USERPROFILE/.aspnet/https -ItemType Directory -Force
-   dotnet dev-certs https -ep $env:USERPROFILE/.aspnet/https/aspnetapp.pfx --password "<YourStrong@Passw0rd>"
-   dotnet dev-certs https --trust
-   ```
-
-   Copy development certificate to WSL:
-
-   ```bash
-   sudo cp /mnt/c/Users/[Windows-Username]/.aspnet/https/aspnetapp.pfx ~/.aspnet/https
-   ```
-
-   ### macOS
-
-   ```bash
-   mkdir -p ~/.aspnet/https
-   dotnet dev-certs https -ep ~/.aspnet/https/aspnetapp.pfx --password "<YourStrong@Passw0rd>"
-   dotnet dev-certs https --trust
-   ```
-
 1. Fork the repository.
-1. Clone repository to WSL and open in Visual Studio Code.
+1. Clone repository (if Windows, use WSL) and open in Visual Studio Code.
 1. Open in _Dev Container_.
 1. Run locally:
 
@@ -66,7 +42,7 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    dotnet watch run --project src/MovieApi/
    ```
 
-1. Browse to <https://localhost:8001/Movies> to inspect API:
+1. Browse to <http://localhost:8080/Movies> to inspect API:
 
    ```json
    [
@@ -174,6 +150,7 @@ To lint repository locally run (from host, not inside dev container):
 ```bash
 docker run \
 -e DEFAULT_BRANCH=main \
+-e IGNORE_GITIGNORED_FILES=true \
 -e RUN_LOCAL=true \
 -e VALIDATE_CSS=false \
 -e VALIDATE_CSS_PRETTIER=false \

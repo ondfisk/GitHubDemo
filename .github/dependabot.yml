@@ -5,8 +5,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    cooldown:
-      default-days: 7
+
+  - package-ecosystem: dotnet-sdk
+    directory: /
+    schedule:
+      interval: weekly
 
   - package-ecosystem: dotnet-sdk
     directory: /
@@ -17,12 +20,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    cooldown:
-      default-days: 7
 
   - package-ecosystem: nuget
     directory: /
     schedule:
       interval: weekly
-    cooldown:
-      default-days: 7

@@ -18,7 +18,18 @@
 	},
 	"customizations": {
 		"vscode": {
-			"settings": {},
+			"settings": {
+				"chat.disableAIFeatures": true,
+				"cSpell.enabled": true,
+				"cSpell.language": "en",
+				"editor.trimAutoWhitespace": true,
+				"files.autoSave": "afterDelay",
+				"files.trimFinalNewlines": true,
+				"files.trimTrailingWhitespace": true,
+				"github.copilot.enable": {
+					"*": false
+				}
+			},
 			"extensions": [
 				"davidanson.vscode-markdownlint",
 				"github.vscode-github-actions",
@@ -32,16 +43,9 @@
 			]
 		}
 	},
-	"forwardPorts": [5432, 8000, 8001],
+	"forwardPorts": [8080],
 	"remoteEnv": {
 		"ASPNETCORE_ENVIRONMENT": "Development",
-		"ASPNETCORE_HTTP_PORTS": "8000",
-		"ASPNETCORE_HTTPS_PORTS": "8001",
-		"ASPNETCORE_Kestrel__Certificates__Default__Password": "<YourStrong@Passw0rd>",
-		"ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/aspnetapp.pfx",
 		"TESTCONTAINERS_HOST_OVERRIDE": "host.docker.internal"
-	},
-	"mounts": [
-		"source=~/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind"
-	]
+	}
 }
