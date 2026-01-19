@@ -2,7 +2,7 @@ namespace MovieApi.Tests.Models;
 
 public sealed class MovieDbContextTests : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _database = new PostgreSqlBuilder().Build();
+    private readonly PostgreSqlContainer _database = new PostgreSqlBuilder("postgres:18").Build();
 
     [Fact]
     public async Task After_migration_database_contains_people()

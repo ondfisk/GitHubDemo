@@ -5,11 +5,16 @@ name: CodeQL
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
     paths-ignore:
       - "**/*.md"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions: {}
 
@@ -19,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
+      security-events: write # Required for codeql
 
     strategy:
       fail-fast: false

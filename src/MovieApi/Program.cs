@@ -39,8 +39,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-
 app.MapHealthChecks("/healthz");
 
 app.MapGet("/movies", async (IMovieService movieService, CancellationToken cancellationToken) =>
