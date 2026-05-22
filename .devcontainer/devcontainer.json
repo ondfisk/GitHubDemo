@@ -12,7 +12,7 @@
 			"bicepVersion": "latest",
 			"extensions": "serviceconnector-passwordless"
 		},
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:": {
 			"moby": true,
 			"installDockerBuildx": true,
 			"installDockerComposeSwitch": true,
