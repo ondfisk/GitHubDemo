@@ -25,7 +25,7 @@ jobs:
 
     permissions:
       contents: read
-      packages: read
+      packages: read # Required for Super-Linter
       issues: write # Required for Super-Linter
       pull-requests: write # Required for Super-Linter
       statuses: write # Required for Super-Linter
