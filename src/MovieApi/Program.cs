@@ -32,6 +32,8 @@ if (Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING") 
     builder.Services.AddOpenTelemetry().UseAzureMonitor();
 }
 
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
