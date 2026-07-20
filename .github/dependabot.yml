@@ -42,5 +42,9 @@ updates:
       dotnet:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: Microsoft.OpenApi # Required for .NET 10: Microsoft.OpenApi must stay below 3.0
+        versions:
+          - ">=3.0.0"
     cooldown:
       default-days: 7
