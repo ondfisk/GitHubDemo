@@ -1,0 +1,9 @@
+{
+    "chat.disableAIFeatures": true,
+    "cSpell.enabled": true,
+    "cSpell.language": "en",
+    "editor.trimAutoWhitespace": true,
+    "files.autoSave": "afterDelay",
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true
+}
