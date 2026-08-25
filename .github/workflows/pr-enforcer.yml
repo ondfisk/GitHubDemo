@@ -1,0 +1,16 @@
+name: pr-enforcer
+
+"on":
+  pull_request:
+
+jobs:
+  enforce-all-checks:
+    name: Enforce all checks
+    runs-on: ubuntu-latest
+    permissions:
+      checks: read
+    steps:
+      - name: GitHub Checks
+        uses: clowtown/pr-enforcer@37fe6a8af5e548b71ce857c58b50b88010a61ae1 # v1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
