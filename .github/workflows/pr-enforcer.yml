@@ -3,12 +3,18 @@ name: pr-enforcer
 "on":
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
 jobs:
   enforce-all-checks:
     name: Enforce all checks
     runs-on: ubuntu-latest
     permissions:
-      checks: read
+      checks: read # Needed for clowtown/pr-enforcer
     steps:
       - name: GitHub Checks
         uses: clowtown/pr-enforcer@37fe6a8af5e548b71ce857c58b50b88010a61ae1 # v1.0

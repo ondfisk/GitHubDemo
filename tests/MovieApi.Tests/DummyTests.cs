@@ -7,4 +7,10 @@ public class DummyTests
     {
         Assert.Fail("By design");
     }
+
+    [Fact]
+    public void Pass()
+    {
+        Assert.True(true);
+    }
 }
