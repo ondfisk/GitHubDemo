@@ -1,5 +1,5 @@
 {
-    "chat.disableAIFeatures": true,
+    "chat.disableAIFeatures": false,
     "cSpell.enabled": true,
     "cSpell.language": "en",
     "editor.trimAutoWhitespace": true,
