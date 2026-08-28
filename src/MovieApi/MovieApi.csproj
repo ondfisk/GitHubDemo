@@ -19,9 +19,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <!-- Required for .NET 10: Microsoft.OpenApi must stay below 3.0 -->
-    <PackageReference Include="Microsoft.OpenApi" Version="[2.12.0, 3.0.0)" />
+    <PackageReference Include="Microsoft.OpenApi" Version="[2.12.2, 3.0.0)" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
-  <PackageReference Include="OpenTelemetry.Api" Version="1.17.0" />
+  <PackageReference Include="OpenTelemetry.Api" Version="1.18.0" />
   </ItemGroup>
 
 </Project>
