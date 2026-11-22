@@ -36,10 +36,10 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    dotnet test
 
    # Run
-   dotnet watch run --project src/MovieApi/
+   dotnet watch --project src/MovieApi/
    ```
 
-1. Browse to <http://localhost:8080/Movies> to inspect API:
+1. Browse to <http://localhost:8080/movies> to inspect API:
 
    ```json
    [
@@ -102,7 +102,7 @@ This repository demonstrates a number of capabilities in GitHub and Microsoft Az
    gh secret set AZURE_CLIENT_DISPLAY_NAME --body "$APP_REGISTRATION_DISPLAY_NAME"
    ```
 
-1. Create a _Log Analytics Workspace_ and an _App Service Plan_ if needed.
+1. Create a shared _Log Analytics Workspace_ and _App Service Plan_.
 
 1. Update [infrastructure/main.bicepparam](`infrastructure/main.bicepparam`).
 
@@ -149,40 +149,36 @@ docker run \
 -e DEFAULT_BRANCH=main \
 -e IGNORE_GITIGNORED_FILES=true \
 -e RUN_LOCAL=true \
--e VALIDATE_CSS=false \
--e VALIDATE_CSS_PRETTIER=false \
--e VALIDATE_GIT_COMMITLINT=false \
--e VALIDATE_GRAPHQL_PRETTIER=false \
--e VALIDATE_HTML=false \
--e VALIDATE_HTML_PRETTIER=false \
--e VALIDATE_JAVASCRIPT_ES=false \
--e VALIDATE_JAVASCRIPT_PRETTIER=false \
--e VALIDATE_JSON=false \
--e VALIDATE_JSON_PRETTIER=false \
--e VALIDATE_JSONC=false \
--e VALIDATE_JSONC_PRETTIER=false \
--e VALIDATE_JSX=false \
--e VALIDATE_JSX_PRETTIER=false \
--e VALIDATE_PYTHON_RUFF=false \
--e VALIDATE_PYTHON_RUFF_FORMAT=false \
--e VALIDATE_TSX=false \
--e VALIDATE_TYPESCRIPT_ES=false \
--e VALIDATE_TYPESCRIPT_PRETTIER=false \
--e VALIDATE_VUE=false \
--e VALIDATE_VUE_PRETTIER=false \
+-e VALIDATE_BASH=true \
+-e VALIDATE_BASH_EXEC=true \
+-e VALIDATE_BIOME_FORMAT=true \
+-e VALIDATE_BIOME_LINT=true \
+-e VALIDATE_CHECKOV=true \
+-e VALIDATE_CSHARP=true \
+-e VALIDATE_DOCKERFILE_HADOLINT=true \
+-e VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS=true \
+-e VALIDATE_DOTNET_SLN_FORMAT_STYLE=true \
+-e VALIDATE_DOTNET_SLN_FORMAT_WHITESPACE=true \
+-e VALIDATE_EDITORCONFIG=true \
+-e VALIDATE_ENV=true \
+-e VALIDATE_GITHUB_ACTIONS=true \
+-e VALIDATE_GITHUB_ACTIONS_ZIZMOR=true \
+-e VALIDATE_GITLEAKS=true \
+-e VALIDATE_JSCPD=true \
+-e VALIDATE_NATURAL_LANGUAGE=true \
+-e VALIDATE_SHELL_SHFMT=true \
 -e FIX_BIOME_FORMAT=true \
 -e FIX_BIOME_LINT=true \
 -e FIX_CSHARP=true \
 -e FIX_DOTNET_SLN_FORMAT_ANALYZERS=true \
 -e FIX_DOTNET_SLN_FORMAT_STYLE=true \
 -e FIX_DOTNET_SLN_FORMAT_WHITESPACE=true \
+-e FIX_EDITORCONFIG=true \
+-e FIX_ENV=true \
 -e FIX_GITHUB_ACTIONS_ZIZMOR=true \
--e FIX_MARKDOWN_PRETTIER=true \
--e FIX_MARKDOWN=true \
 -e FIX_NATURAL_LANGUAGE=true \
--e FIX_YAML_PRETTIER=true \
+-e FIX_SHELL_SHFMT=true \
 -v .:/tmp/lint \
---platform linux/amd64 \
 --rm ghcr.io/super-linter/super-linter:latest
 ```
 

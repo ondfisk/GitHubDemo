@@ -41,30 +41,23 @@ jobs:
         uses: super-linter/super-linter@2da136927bd4a73596db63044b504547c62cb854 # v9.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NO_COLOR: true
           SAVE_SUPER_LINTER_SUMMARY: true
-          VALIDATE_CSS: false
-          VALIDATE_CSS_PRETTIER: false
-          VALIDATE_GIT_COMMITLINT: false
-          VALIDATE_GRAPHQL_PRETTIER: false
-          VALIDATE_HTML: false
-          VALIDATE_HTML_PRETTIER: false
-          VALIDATE_JAVASCRIPT_ES: false
-          VALIDATE_JAVASCRIPT_PRETTIER: false
-          VALIDATE_JSON: false
-          VALIDATE_JSON_PRETTIER: false
-          VALIDATE_JSONC: false
-          VALIDATE_JSONC_PRETTIER: false
-          VALIDATE_JSX: false
-          VALIDATE_JSX_PRETTIER: false
-          VALIDATE_PYTHON_RUFF: false
-          VALIDATE_PYTHON_RUFF_FORMAT: false
-          VALIDATE_TSX: false
-          VALIDATE_TYPESCRIPT_ES: false
-          VALIDATE_TYPESCRIPT_PRETTIER: false
-          VALIDATE_VUE: false
-          VALIDATE_VUE_PRETTIER: false
-          LANG: C.UTF-8
-          LC_ALL: C.UTF-8
-          TERM: xterm-256color
-          PYTHONIOENCODING: utf-8
-          PYTHONUNBUFFERED: 1
+          VALIDATE_BASH: true
+          VALIDATE_BASH_EXEC: true
+          VALIDATE_BIOME_FORMAT: true
+          VALIDATE_BIOME_LINT: true
+          VALIDATE_CHECKOV: true
+          VALIDATE_CSHARP: true
+          VALIDATE_DOCKERFILE_HADOLINT: true
+          VALIDATE_DOTNET_SLN_FORMAT_ANALYZERS: true
+          VALIDATE_DOTNET_SLN_FORMAT_STYLE: true
+          VALIDATE_DOTNET_SLN_FORMAT_WHITESPACE: true
+          VALIDATE_EDITORCONFIG: true
+          VALIDATE_ENV: true
+          VALIDATE_GITHUB_ACTIONS: true
+          VALIDATE_GITHUB_ACTIONS_ZIZMOR: true
+          VALIDATE_GITLEAKS: true
+          VALIDATE_JSCPD: true
+          VALIDATE_NATURAL_LANGUAGE: true
+          VALIDATE_SHELL_SHFMT: true
